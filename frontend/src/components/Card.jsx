@@ -1,7 +1,7 @@
 export default function Card({ icon: Icon, heading, title,iconColor }) {
   return (
     <div className="rounded-2xl shadow-2xl ">
-      <div className={`flex p-2 rounded-2xl justify-center gap-1 flex-wrap md:px-10 md:py-4 `}>
+      <div className={`flex p-2 rounded-2xl justify-center gap-3 flex-wrap md:px-10 md:py-4 `}>
         <div >
           <Icon className={`text-3xl p-2 text-center rounded-2xl text-white md:p-4 md:text-6xl  ${iconColor}`} />
         </div>
