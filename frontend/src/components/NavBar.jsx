@@ -9,7 +9,7 @@ export default function NavBar() {
     navigate("/");
   } 
   return (
-      <header className="h-20 w-full bg-gray-600 flex justify-between px-5 max-[345px]:px-2 max-[445px]:h-12 ">
+    <header className="h-20 w-full bg-[#2c3e50] flex justify-between px-5 max-[345px]:px-2 max-[445px]:h-12 ">
         <div className="flex gap-2 items-center">
           <div className="text-white text-2xl max-[680px]:text-lg max-[345px]:text-sm">
             <FaCalendarAlt />
