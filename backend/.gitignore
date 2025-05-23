@@ -26,3 +26,4 @@ go.work.sum
 
 # binary files
 bin/
+tmp/
