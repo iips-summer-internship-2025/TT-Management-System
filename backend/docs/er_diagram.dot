@@ -1,0 +1,27 @@
+digraph TimetableManagementSystem {
+    rankdir=LR;
+    node [shape=record, fontname="Helvetica", fontsize=10];
+
+    User [label="{User|ID : uint\lUsername : string\lPassword : string\lRole : string\lFacultyID : uint (nullable)\l}"];
+    Faculty [label="{Faculty|ID : uint\lName : string\lEmail : string\lPhone : string\l}"];
+    Course [label="{Course|ID : uint\lName : string\lCode : string\l}"];
+    Batch [label="{Batch|ID : uint\lYear : int\lSection : string\lCourseID : uint\l}"];
+    Subject [label="{Subject|ID : uint\lName : string\lCode : string\lCourseID : uint\l}"];
+    Room [label="{Room|ID : uint\lName : string\lCapacity : int\l}"];
+    Timetable [label="{Timetable|ID : uint\lDayOfWeek : string\lStartTime : string\lEndTime : string\lSubjectID : uint\lFacultyID : uint\lBatchID : uint\lRoomID : uint\l}"];
+    FacultySubject [label="{faculty_subjects|FacultyID : uint\lSubjectID : uint\l}"];
+
+    // Relationships
+    User -> Faculty [label="(1:0..1)", style=dashed];
+    Faculty -> Subject [label="(M:N)", arrowhead=none, arrowtail=none, dir=both];
+    Course -> Batch [label="(1:N)"];
+    Course -> Subject [label="(1:N)"];
+    Batch -> Timetable [label="(1:N)"];
+    Subject -> Timetable [label="(1:N)"];
+    Faculty -> Timetable [label="(1:N)"];
+    Room -> Timetable [label="(1:N)"];
+
+    // M:N relationship table
+    Faculty -> FacultySubject [arrowhead=normal, label="(1:N)"];
+    Subject -> FacultySubject [arrowhead=normal, label="(1:N)"];
+}
