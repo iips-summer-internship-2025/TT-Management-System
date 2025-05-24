@@ -3,6 +3,7 @@ import { FaUser, FaCalendarAlt } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { CiLogin } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
+import logo from "..//assets/iips.png";
 
 
 const LoginPage = () => {
@@ -18,10 +19,10 @@ const LoginPage = () => {
   return (
     <div className="h-screen flex items-center bg-gray-100 max-[680px]:flex-col max-[680px]:gap-4">
       {/* Left-Section*/}
-<div className="w-1/2 h-full flex flex-col items-center justify-center bg-gradient-to-b from-blue-600 to-blue-400 max-[680px]:w-full max-[680px]:h-1/4 max-[680px]:flex-row">
+<div className="w-1/2 h-full flex flex-col items-center justify-center bg-[linear-gradient(135deg,#1e3a8a,#0f766e)] max-[680px]:w-full max-[680px]:h-1/4 max-[680px]:flex-row">
   <div className="items-center text-center">
     <img 
-      src="../src/assets/iips.png"
+      src={logo}
       alt="IIPS-LOGO"
       className="w-55 h-55 max-[680px]:w-20 max-[680px]:h-20"
     />
@@ -90,7 +91,7 @@ const LoginPage = () => {
             <button
               type="submit"
               onClick={handleLogin}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 flex row-auto justify-center items-center max-[680px]:text-xs"
+              className="w-full bg-[#1e40af] text-white py-2 px-4 rounded-lg hover:bg-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 flex row-auto justify-center items-center max-[680px]:text-xs"
             >
               <CiLogin />
               Sign In
