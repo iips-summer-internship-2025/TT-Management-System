@@ -41,35 +41,35 @@ const CreateTable = () => {
   const getFilteredSubjects = () => {
     if (!batchDetails.semester) return academicData.subjects;
     const semesterNumber = parseInt(batchDetails.semester);
-    return academicData.subjects.filter(subject => 
+    return academicData.subjects.filter(subject =>
       subject.semesters.includes(semesterNumber)
     );
   };
 
   // Add this function to filter courses based on selected batch
-const getFilteredCourses = () => {
-  if (!batchDetails.batchYear) return academicData.courses;
-  
-  const selectedBatch = academicData.batches.find(b => b.name === batchDetails.batchYear);
-  if (!selectedBatch) return academicData.courses;
-  
-  // If batch is IT-2K22, only show B.Tech IT courses
-  if (selectedBatch.id === "it-2k22") {
-    return academicData.courses.filter(course => 
-      course.name.includes("B.Tech IT")
-    );
-  }
-  
-  // Default behavior - filter courses by department
-  return academicData.courses.filter(course => 
-    course.department === selectedBatch.department
-  );
-};
+  const getFilteredCourses = () => {
+    if (!batchDetails.batchYear) return academicData.courses;
 
-// Replace the getFilteredFaculties function with this simplified version
-const getFilteredFaculties = () => {
-  return academicData.faculties; // Now returns all faculties regardless of subject
-};
+    const selectedBatch = academicData.batches.find(b => b.name === batchDetails.batchYear);
+    if (!selectedBatch) return academicData.courses;
+
+    // If batch is IT-2K22, only show B.Tech IT courses
+    if (selectedBatch.id === "it-2k22") {
+      return academicData.courses.filter(course =>
+        course.name.includes("B.Tech IT")
+      );
+    }
+
+    // Default behavior - filter courses by department
+    return academicData.courses.filter(course =>
+      course.department === selectedBatch.department
+    );
+  };
+
+  // Replace the getFilteredFaculties function with this simplified version
+  const getFilteredFaculties = () => {
+    return academicData.faculties; // Now returns all faculties regardless of subject
+  };
 
   // Function to parse time and convert to minutes for proper sorting
   const parseTimeToMinutes = (timeStr) => {
@@ -95,13 +95,13 @@ const getFilteredFaculties = () => {
   // Function to format time slot to 24-hour format
   const formatTimeSlot = (timeSlot) => {
     if (!validateTimeSlot(timeSlot)) return null;
-    
+
     const [startTime, endTime] = timeSlot.split('-');
     const formatTime = (time) => {
       const [hours, minutes] = time.split(':');
       return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
     };
-    
+
     return `${formatTime(startTime)}-${formatTime(endTime)}`;
   };
 
@@ -110,34 +110,34 @@ const getFilteredFaculties = () => {
     const [newStart, newEnd] = newTimeSlot.split('-');
     const newStartMinutes = parseTimeToMinutes(newStart);
     const newEndMinutes = parseTimeToMinutes(newEnd);
-    
+
     // Check if end time is after start time
     if (newEndMinutes <= newStartMinutes) {
       return { hasOverlap: true, message: "End time must be after start time!" };
     }
-    
+
     for (let i = 0; i < existingSlots.length; i++) {
       if (i === excludeIndex) continue; // Skip the slot being edited
-      
+
       const [existingStart, existingEnd] = existingSlots[i].split('-');
       const existingStartMinutes = parseTimeToMinutes(existingStart);
       const existingEndMinutes = parseTimeToMinutes(existingEnd);
-      
+
       // Check for overlap
       const hasOverlap = (
         (newStartMinutes >= existingStartMinutes && newStartMinutes < existingEndMinutes) ||
         (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
         (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes)
       );
-      
+
       if (hasOverlap) {
-        return { 
-          hasOverlap: true, 
-          message: `Time slot overlaps with existing slot: ${existingSlots[i]}` 
+        return {
+          hasOverlap: true,
+          message: `Time slot overlaps with existing slot: ${existingSlots[i]}`
         };
       }
     }
-    
+
     return { hasOverlap: false };
   };
 
@@ -162,9 +162,9 @@ const getFilteredFaculties = () => {
   const handleDialogInputChange = (field, value) => {
     if (field === "subject") {
       const selectedSubject = academicData.subjects.find((sub) => sub.name === value);
-      setDialogData({ 
-        ...dialogData, 
-        subject: selectedSubject.name, 
+      setDialogData({
+        ...dialogData,
+        subject: selectedSubject.name,
         code: selectedSubject.code,
         faculty: "" // Reset faculty when subject changes
       });
@@ -183,24 +183,24 @@ const getFilteredFaculties = () => {
   const handleAddTimeSlot = () => {
     if (newTimeSlot.trim()) {
       const formattedTimeSlot = formatTimeSlot(newTimeSlot.trim());
-      
+
       if (!formattedTimeSlot) {
         alert("Please enter a valid time slot format (e.g., 9:00-10:00 or 17:30-18:30)");
         return;
       }
-      
+
       if (timeSlots.includes(formattedTimeSlot)) {
         alert("This time slot already exists!");
         return;
       }
-      
+
       // Check for overlaps
       const overlapCheck = checkTimeSlotOverlap(formattedTimeSlot, timeSlots);
       if (overlapCheck.hasOverlap) {
         alert(overlapCheck.message);
         return;
       }
-      
+
       const newTimeSlots = [...timeSlots, formattedTimeSlot];
       setTimeSlots(sortTimeSlots(newTimeSlots));
       setNewTimeSlot("");
@@ -218,7 +218,7 @@ const getFilteredFaculties = () => {
       }
     });
     setGridData(newGridData);
-    
+
     // Remove the time slot
     const newTimeSlots = timeSlots.filter((_, i) => i !== index);
     setTimeSlots(newTimeSlots);
@@ -232,28 +232,28 @@ const getFilteredFaculties = () => {
   const handleSaveEditTimeSlot = () => {
     if (editingTimeSlot.value.trim()) {
       const formattedTimeSlot = formatTimeSlot(editingTimeSlot.value.trim());
-      
+
       if (!formattedTimeSlot) {
         alert("Please enter a valid time slot format (e.g., 9:00-10:00 or 17:30-18:30)");
         return;
       }
-      
+
       if (timeSlots.includes(formattedTimeSlot) && formattedTimeSlot !== timeSlots[editingTimeSlot.index]) {
         alert("This time slot already exists!");
         return;
       }
-      
+
       // Check for overlaps (excluding the current slot being edited)
       const overlapCheck = checkTimeSlotOverlap(formattedTimeSlot, timeSlots, editingTimeSlot.index);
       if (overlapCheck.hasOverlap) {
         alert(overlapCheck.message);
         return;
       }
-      
+
       const oldTimeSlot = timeSlots[editingTimeSlot.index];
       const newTimeSlots = [...timeSlots];
       newTimeSlots[editingTimeSlot.index] = formattedTimeSlot;
-      
+
       // Update gridData keys
       const newGridData = {};
       Object.keys(gridData).forEach(key => {
@@ -264,7 +264,7 @@ const getFilteredFaculties = () => {
           newGridData[key] = gridData[key];
         }
       });
-      
+
       setGridData(newGridData);
       setTimeSlots(sortTimeSlots(newTimeSlots));
       setEditTimeSlotDialog(false);
@@ -345,11 +345,11 @@ const getFilteredFaculties = () => {
                 <SelectValue placeholder="Select course" />
               </SelectTrigger>
               <SelectContent>
-    {getFilteredCourses().map((course) => (
-      <SelectItem key={course.id} value={course.name}>
-        {course.name}
-      </SelectItem>
-    ))}
+                {getFilteredCourses().map((course) => (
+                  <SelectItem key={course.id} value={course.name}>
+                    {course.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -382,11 +382,10 @@ const getFilteredFaculties = () => {
         </div>
         <div className="mt-4">
           <Button
-            className={`w-full font-semibold py-2 rounded-md shadow-md ${
-              allDetailsSelected() 
-                ? "bg-indigo-600 hover:bg-indigo-700 text-white" 
+            className={`w-full font-semibold py-2 rounded-md shadow-md ${allDetailsSelected()
+                ? "bg-indigo-600 hover:bg-indigo-700 text-white"
                 : "bg-gray-400 text-gray-700 cursor-not-allowed"
-            }`}
+              }`}
             onClick={handleGenerateTimetable}
             disabled={!allDetailsSelected()}
           >
