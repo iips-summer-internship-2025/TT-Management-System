@@ -24,10 +24,10 @@ const LoginPage = () => {
     <img 
       src={logo}
       alt="IIPS-LOGO"
-      className="w-55 h-55 ml-8 max-[680px]:w-20 max-[680px]:h-20"
+      className="w-55 h-55 max-[680px]:w-20 max-[680px]:h-20"
     />
   </div>
-  <div className="text-white p-8 max-[680px]:p-4 max-[680px]:w-full">
+  <div className="text-white p-8 max-[680px]:p-4 max-[680px]:w-full ">
     <h1 className="text-2xl font-bold mb-4 max-[680px]:text-center max-[680px]:text-lg max-[680px]:mb-2">International Institute of Professional Studies</h1>
     <p className="text-lg mb-8 max-[680px]:text-center max-[680px]:text-sm max-[680px]:mb-1">Devi Ahilya Vishwavidyalaya (DAVV)</p>
     <div className="flex items-center space-x-2 max-[680px]:w-full max-[680px]:flex-col max-[680px]:space-x-0">

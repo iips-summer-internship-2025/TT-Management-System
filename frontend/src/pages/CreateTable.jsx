@@ -41,7 +41,7 @@ const CreateTable = () => {
   const getFilteredSubjects = () => {
     if (!batchDetails.semester) return academicData.subjects;
     const semesterNumber = parseInt(batchDetails.semester);
-    return academicData.subjects.filter(subject =>
+    return academicData.subjects.filter(subject => 
       subject.semesters.includes(semesterNumber)
     );
   };
@@ -71,6 +71,7 @@ const CreateTable = () => {
     return academicData.faculties; // Now returns all faculties regardless of subject
   };
 
+
   // Function to parse time and convert to minutes for proper sorting
   const parseTimeToMinutes = (timeStr) => {
     const [hours, minutes] = timeStr.split(':').map(Number);
@@ -95,13 +96,11 @@ const CreateTable = () => {
   // Function to format time slot to 24-hour format
   const formatTimeSlot = (timeSlot) => {
     if (!validateTimeSlot(timeSlot)) return null;
-
     const [startTime, endTime] = timeSlot.split('-');
     const formatTime = (time) => {
       const [hours, minutes] = time.split(':');
       return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
     };
-
     return `${formatTime(startTime)}-${formatTime(endTime)}`;
   };
 
@@ -110,7 +109,6 @@ const CreateTable = () => {
     const [newStart, newEnd] = newTimeSlot.split('-');
     const newStartMinutes = parseTimeToMinutes(newStart);
     const newEndMinutes = parseTimeToMinutes(newEnd);
-
     // Check if end time is after start time
     if (newEndMinutes <= newStartMinutes) {
       return { hasOverlap: true, message: "End time must be after start time!" };
@@ -122,7 +120,6 @@ const CreateTable = () => {
       const [existingStart, existingEnd] = existingSlots[i].split('-');
       const existingStartMinutes = parseTimeToMinutes(existingStart);
       const existingEndMinutes = parseTimeToMinutes(existingEnd);
-
       // Check for overlap
       const hasOverlap = (
         (newStartMinutes >= existingStartMinutes && newStartMinutes < existingEndMinutes) ||
@@ -162,9 +159,11 @@ const CreateTable = () => {
   const handleDialogInputChange = (field, value) => {
     if (field === "subject") {
       const selectedSubject = academicData.subjects.find((sub) => sub.name === value);
+
       setDialogData({
         ...dialogData,
         subject: selectedSubject.name,
+
         code: selectedSubject.code,
         faculty: "" // Reset faculty when subject changes
       });
@@ -183,12 +182,10 @@ const CreateTable = () => {
   const handleAddTimeSlot = () => {
     if (newTimeSlot.trim()) {
       const formattedTimeSlot = formatTimeSlot(newTimeSlot.trim());
-
       if (!formattedTimeSlot) {
         alert("Please enter a valid time slot format (e.g., 9:00-10:00 or 17:30-18:30)");
         return;
       }
-
       if (timeSlots.includes(formattedTimeSlot)) {
         alert("This time slot already exists!");
         return;
@@ -218,7 +215,6 @@ const CreateTable = () => {
       }
     });
     setGridData(newGridData);
-
     // Remove the time slot
     const newTimeSlots = timeSlots.filter((_, i) => i !== index);
     setTimeSlots(newTimeSlots);
@@ -250,6 +246,7 @@ const CreateTable = () => {
         return;
       }
 
+
       const oldTimeSlot = timeSlots[editingTimeSlot.index];
       const newTimeSlots = [...timeSlots];
       newTimeSlots[editingTimeSlot.index] = formattedTimeSlot;
@@ -264,7 +261,6 @@ const CreateTable = () => {
           newGridData[key] = gridData[key];
         }
       });
-
       setGridData(newGridData);
       setTimeSlots(sortTimeSlots(newTimeSlots));
       setEditTimeSlotDialog(false);
@@ -345,11 +341,13 @@ const CreateTable = () => {
                 <SelectValue placeholder="Select course" />
               </SelectTrigger>
               <SelectContent>
+
                 {getFilteredCourses().map((course) => (
                   <SelectItem key={course.id} value={course.name}>
                     {course.name}
                   </SelectItem>
                 ))}
+
               </SelectContent>
             </Select>
           </div>
@@ -386,6 +384,7 @@ const CreateTable = () => {
                 ? "bg-indigo-600 hover:bg-indigo-700 text-white"
                 : "bg-gray-400 text-gray-700 cursor-not-allowed"
               }`}
+
             onClick={handleGenerateTimetable}
             disabled={!allDetailsSelected()}
           >
