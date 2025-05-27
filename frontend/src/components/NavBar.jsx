@@ -1,9 +1,7 @@
-import { FaCalendarAlt } from 'react-icons/fa';
-import { CiLogin } from 'react-icons/ci';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import { GiHamburgerMenu } from 'react-icons/gi';
+import { FaCalendarAlt } from "react-icons/fa";
+import { CiLogin } from "react-icons/ci";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useState } from "react";
 
 export default function NavBar() {
@@ -11,17 +9,8 @@ export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const logoutHandler = (event) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const logoutHandler = (event) => {
     event.preventDefault();
     navigate("/");
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
   };
 
   const toggleMenu = () => {
@@ -46,7 +35,11 @@ export default function NavBar() {
         <GiHamburgerMenu />
       </button>
 
-      <div className={`flex-col md:flex md:flex-row md:items-center gap-4 ${menuOpen ? 'flex' : 'hidden'} absolute top-20 right-0 bg-gray-700 p-4 md:static md:bg-transparent z-10`}>
+      <div
+        className={`flex-col md:flex md:flex-row md:items-center gap-4 ${
+          menuOpen ? "flex" : "hidden"
+        } absolute top-20 right-0 bg-gray-700 p-4 md:static md:bg-transparent z-10`}
+      >
         <div className="text-white h-9 w-9 flex justify-center items-center border-2 border-white rounded-full max-[345px]:h-7 max-[345px]:w-7 max-[345px]:text-xs">
           Img
         </div>
