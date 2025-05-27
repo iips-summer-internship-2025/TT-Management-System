@@ -1,7 +1,9 @@
 import { FaCalendarAlt } from 'react-icons/fa';
 import { CiLogin } from 'react-icons/ci';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { GiHamburgerMenu } from 'react-icons/gi';
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useState } from "react";
 
 export default function NavBar() {
@@ -9,8 +11,17 @@ export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const logoutHandler = (event) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const logoutHandler = (event) => {
     event.preventDefault();
     navigate("/");
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   };
 
   const toggleMenu = () => {
