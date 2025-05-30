@@ -6,6 +6,7 @@ import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
 import { FaBook,FaDoorOpen,FaPlus,FaEdit } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
+import data from "../assets/academicData.json";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ const Dashboard = () => {
       <NavBar />
       <Heading text="Admin Dashboard" />
       <div className="flex justify-baseline gap-3 items-center p-5">
-        <Card heading="Heading" title="Faculty Members" icon={MdGroups } iconColor={"bg-green-600"} />
-        <Card heading="Heading" title="Subjects" icon={FaBook } iconColor={"bg-orange-600"} />
-        <Card heading="Heading" title="Rooms" icon={FaDoorOpen } iconColor={"bg-red-600"} />
+        <Card heading={data.faculties.length} title="Faculty Members" icon={MdGroups } iconColor={"bg-green-600"} />
+        <Card heading={data.subjects.length} title="Subjects" icon={FaBook } iconColor={"bg-orange-600"} />
+        <Card heading={data.rooms.length} title="Rooms" icon={FaDoorOpen } iconColor={"bg-red-600"} />
       </div>
       <div className="flex flex-col p-5 gap-5 justify-baseline items-center m-2 md:flex-row md:flex-wrap">
         
@@ -59,6 +60,14 @@ const Dashboard = () => {
           icon={FaDoorOpen}
           iconColor="bg-purple-400"
           onClick={() => navigate("/manage-rooms")}
+        />
+
+        <ClickCard
+          discription="Manage faculty"
+          title="Faculty"
+          icon={FaDoorOpen}
+          iconColor="bg-orange-400"
+          onClick={() => navigate("/manage-faculty")}
         />
       </div>
     </div>
