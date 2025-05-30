@@ -3,18 +3,23 @@ import { FaUser, FaCalendarAlt } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { CiLogin } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import logo from "..//assets/iips.png";
 
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const handleLogin = (event) => {
+
+  const handleLogin = async (event) => {
     event.preventDefault();
+    await login(username, password);
     console.log("Login attempted with:", username, password);
-    navigate("/dashboard");
   };
+
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="h-screen flex items-center bg-gray-100 max-[680px]:flex-col max-[680px]:gap-4">
@@ -105,7 +110,7 @@ const LoginPage = () => {
           </div>
 
           <div className="text-center mt-8 text-xs text-gray-400">
-            © 2025 KnowledgeTime@iips - IIPS DAVV
+            © {currentYear} KnowledgeTime@iips - IIPS DAVV
           </div>
         </div>
       </div>
