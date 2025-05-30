@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import UpdateTimeTable from './pages/UpdateTimeTable'
 import Subjects from './pages/ManageSubjects'
 import Rooms from './pages/ManageRooms'
+import FacultyTable from './pages/ManageFaculty';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/view-timetable" element={<ViewTable />} />
         <Route path="/manage-subjects" element={<Subjects />} />
         <Route path="/manage-rooms" element={<Rooms />} />
+        <Route path="/manage-faculty" element={<FacultyTable />} />
       </Routes>
     </>
   )
