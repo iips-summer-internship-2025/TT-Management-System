@@ -10,6 +10,9 @@ export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const logoutHandler = (event) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const logoutHandler = (event) => {
     event.preventDefault();
     navigate("/");
   };
@@ -18,7 +21,14 @@ export default function NavBar() {
     setMenuOpen(!menuOpen);
   };
 
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
+    
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
