@@ -1,38 +1,37 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"tms-server/controllers"
-	// "tms-server/middleware"
+	"tms-server/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(r *gin.Engine) {
+	api := r.Group("/api/v1")
+	api.Use(middleware.CORSMiddleware())
 
-	r.GET("/ping", func(c *gin.Context) {
+	api.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong! TMS-server is up"})
 	})
-
 	r.POST("/login", controllers.Login)
+
+	// api.Use(middleware.JWTAuthMiddleware())
 
 	// TODO: protected routes
 
-	api := r.Group("/api/v1")
+	course := api.Group("/course")
 	{
-		// api.Use(middleware.JWTAuthMiddleware())
+		course.GET("/", controllers.CourseAll)
+		course.POST("/", controllers.CourseCreate)
+	}
 
-		course := api.Group("/course")
-		{
-			course.GET("/", controllers.CourseAll)
-			course.POST("/", controllers.CourseCreate)
-		}
-
-		subject := api.Group("/subject")
-		{
-			subject.GET("/", controllers.SubjectAll)
-			subject.POST("/", controllers.SubjectCreate)
-			subject.GET("/:id", controllers.SubjectGet)
-			subject.PUT("/:id", controllers.SubjectUpdate)
-			subject.DELETE("/:id", controllers.SubjectDelete)
-		}
+	subject := api.Group("/subject")
+	{
+		subject.GET("/", controllers.SubjectAll)
+		subject.POST("/", controllers.SubjectCreate)
+		subject.GET("/:id", controllers.SubjectGet)
+		subject.PUT("/:id", controllers.SubjectUpdate)
+		subject.DELETE("/:id", controllers.SubjectDelete)
 	}
 }
