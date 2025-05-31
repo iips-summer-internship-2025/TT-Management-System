@@ -6,10 +6,11 @@ type Timetable struct {
 	StartTime string `gorm:"not null"` // Format: "09:00"
 	EndTime   string `gorm:"not null"` // Format: "10:00"
 
-	SubjectID uint
-	FacultyID uint
-	BatchID   uint
-	RoomID    uint
+	SubjectID  uint
+	FacultyID  uint
+	BatchID    uint
+	SemesterID uint
+	RoomID     uint
 
 	Subject Subject
 	Faculty Faculty
