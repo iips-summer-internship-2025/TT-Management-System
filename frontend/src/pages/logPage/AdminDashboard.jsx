@@ -1,8 +1,8 @@
-import NavBar from "../components/NavBar";
-import Card from "../components/Card";
-import ClickCard from "../components/ClickCard";
+import NavBar from "../../components/NavBar";
+import Card from "../../components/Card";
+import ClickCard from "../../components/ClickCard";
 import { useNavigate } from "react-router-dom";
-import Heading from "../components/Heading";
+import Heading from "../../components/Heading";
 import { MdGroups } from "react-icons/md";
 import { FaBook,FaDoorOpen,FaPlus,FaEdit } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";

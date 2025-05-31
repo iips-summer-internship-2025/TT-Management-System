@@ -1,10 +1,7 @@
 import { FaCalendarAlt, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
-import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useState } from "react";
 import logo from "../assets/iips.png";
 
