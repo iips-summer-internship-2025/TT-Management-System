@@ -4,10 +4,10 @@ import CreateTable from './pages/CreateTable'
 import ViewTable from './pages/ViewTimeTable'
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard'
-import UpdateTimeTable from './pages/UpdateTimeTable'
+import Courses from './pages/ManageCourses'
 import Subjects from './pages/ManageSubjects'
 import Rooms from './pages/ManageRooms'
-import FacultyTable from './pages/ManageFaculty';
+import Faculty from './pages/ManageFaculty';
 
 function App() {
 
@@ -17,11 +17,11 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create-timetable" element={<CreateTable />} />
-        <Route path="/update-timetable" element={<UpdateTimeTable />} />
+        <Route path="/manage-courses" element={<Courses />} />
         <Route path="/view-timetable" element={<ViewTable />} />
         <Route path="/manage-subjects" element={<Subjects />} />
         <Route path="/manage-rooms" element={<Rooms />} />
-        <Route path="/manage-faculty" element={<FacultyTable />} />
+        <Route path="/manage-faculty" element={<Faculty />} />
       </Routes>
     </>
   )
