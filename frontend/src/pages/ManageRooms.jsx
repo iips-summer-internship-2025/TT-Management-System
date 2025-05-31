@@ -56,7 +56,7 @@ const ManageRooms = () => {
           </button>
         </div>
 
-        <div className="flex flex-wrap gap-[25px] justify-center">
+        <div className="flex flex-wrap gap-[25px] justify-center ">
           {rooms.map((room) => (
             <div
               key={room.id}
