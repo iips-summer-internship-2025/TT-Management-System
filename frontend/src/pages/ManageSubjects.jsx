@@ -62,13 +62,11 @@ function ManageSubjects() {
               className="w-[200px] h-[200px] bg-gradient-to-br from-white via-blue-50 to-white rounded-2xl border border-gray-200 shadow-lg p-4 flex flex-col justify-between transform transition duration-300 hover:scale-105 hover:shadow-2xl"
             >
               <div>
-                <p className="text-sm text-gray-500 font-semibold">
-                  ID: {subject.id}
-                </p>
-                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                <p className="text-xl mt-1 text-gray-800 font-medium line-clamp-2">
                   {subject.name}
                 </p>
-                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                
+                <p className="text-sm text-gray-500 font-semibold">
                   {subject.code}
                 </p>
                 
