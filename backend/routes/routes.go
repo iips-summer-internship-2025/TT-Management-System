@@ -8,11 +8,11 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine) {
+	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api/v1")
-	api.Use(middleware.CORSMiddleware())
 	{
-		r.GET("/ping", controllers.Ping)
-		r.POST("/login", controllers.Login)
+		api.GET("/ping", controllers.Ping)
+		api.POST("/login", controllers.Login)
 
 		// api.Use(middleware.JWTAuthMiddleware())
 		course := api.Group("/course")
