@@ -102,7 +102,7 @@ erDiagram
     ROOM ||--|{ TIMETABLE : "scheduled in"
     FACULTY ||--o{ FACULTY_SUBJECTS : "teaches"
     SUBJECT ||--o{ FACULTY_SUBJECTS : "taught by"
-
+```
 
 ## Installation and Setup
 
@@ -206,16 +206,3 @@ frontend/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-```
-
-This README provides a comprehensive overview of the Timetable Management System project, including:
-
-1. Introduction and project description
-2. Visual representation of system architecture
-3. Key features
-4. Technology stack details
-5. Database schema with ER diagram
-6. Installation and setup instructions for both frontend and backend
-7. Basic usage guide
-8. Project structure overview
-9. Contributing guidelines
