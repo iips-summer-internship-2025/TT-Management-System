@@ -21,65 +21,72 @@ function ManageSubjects() {
 
   return (
     <>
-        <div className="bg-slate-800 text-white">
-      <div className="max-w-7xl mx-auto px-16 py-4 flex justify-between items-center">
-        <h1 className="text-3xl font-bold leading-tight">
-          IIPS Timetable Management<br />System
-        </h1>
-        <button className="border border-white text-white px-4 py-1 rounded hover:bg-white hover:text-slate-800 transition" onClick={()=>navigate("/dashboard")}>
-          Back to Dashboard
-        </button>
+      <div className="bg-slate-800 text-white shadow-md">
+        <div className="max-w-7xl mx-auto px-16 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-semibold leading-tight">
+              IIPS Timetable Management <br />
+              System
+            </h1>
+          </div>
+
+          <button
+            className="border border-white text-white px-5 py-2 rounded hover:bg-white hover:text-[#2c3e50] transition"
+            onClick={() => navigate("/dashboard")}
+          >
+            Back to Dashboard
+          </button>
+        </div>
+
+        <div className="bg-gray-100 text-black">
+          <div className="max-w-7xl mx-auto px-16 py-3 text-sm">
+            <span className="font-semibold">Admin Panel</span>
+            <span className="text-gray-400 ml-4">Dashboard</span>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-gray-100 px-22 py-2 text-sm">
-        <span className="text-black font-semibold mr-4">Admin Panel</span>
-        <span className="text-gray-500" >Dashboard</span>
-      </div>
-    </div>
-
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-md rounded-lg max-w-6xl mx-auto">
-        <div className="bg-gray-200 px-6 py-4 rounded-t-lg border-b flex flex-row justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">Manage Subjects</h1>
-           <button className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded" onClick={handleAddNewSubject}>
+      <div className="max-w-7xl mx-auto p-6 ">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Manage Subjects</h2>
+          <button className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-lg shadow-md text-sm" onClick={handleAddNewSubject}>
             Add New Subject
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-800 text-white">
-              <tr>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Code</th>
-                <th className="py-3 px-4">Credit</th>
-                <th className="py-3 px-4">Semester</th>
-                <th className="py-3 px-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data.subjects.map((subject) => (
-                <tr key={subject.id}>
-                  <td className="px-4 py-3">{subject.name}</td>
-                  <td className="px-4 py-3">{subject.code}</td>
-                  <td className="px-4 py-3">{subject.credits}</td>
-                  <td className="px-4 py-3">{subject.semesters[0]},{subject.semesters[1]}</td>
-                  <td className="px-4 py-3 space-x-2">
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded" onClick={handleEdit}>
-                      Edit
-                    </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded" onClick={handleDelete}>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
 
+        <div className="flex flex-wrap gap-[25px] justify-center mt-15">
+          {subjects.map((subject) => (
+            <div
+              key={subject.id}
+              className="w-[200px] h-[200px] bg-gradient-to-br from-white via-blue-50 to-white rounded-2xl border border-gray-200 shadow-lg p-4 flex flex-col justify-between transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+            >
+              <div>
+                <p className="text-sm text-gray-500 font-semibold">
+                  ID: {subject.id}
+                </p>
+                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                  {subject.name}
+                </p>
+                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                  {subject.code}
+                </p>
+                
+              </div>
+
+              <div className="mt-auto flex justify-between">
+                <button className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold px-3 py-1.5 rounded-lg text-sm border border-cyan-700 shadow-md hover:shadow-lg hover:from-teal-600 hover:to-cyan-700 focus:outline-none" onClick={handleEdit}>
+                  Edit
+                </button>
+
+                <button className="bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold px-3 py-1.5 rounded-lg text-sm border border-rose-700 shadow-md hover:shadow-lg hover:from-red-600 hover:to-rose-600 focus:outline-none" onClick={handleDelete}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
     </>
   )
 }

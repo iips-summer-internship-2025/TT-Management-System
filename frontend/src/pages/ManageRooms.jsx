@@ -6,15 +6,15 @@ function ManageRooms() {
   const rooms = data.rooms;
 
     const handleEdit = (id) => {
-    console.log("Edit Subject", id);
+    console.log("Edit Rooms", id);
   }
 
   const handleDelete = (id) => {
-    console.log("Delete Subject", id);
+    console.log("Delete Rooms", id);
   }
 
   const handleAddNewRoom = () => {
-    console.log("Add New Subject");
+    console.log("Add New Rooms");
   }
   const navigate=useNavigate();
 
@@ -43,48 +43,47 @@ function ManageRooms() {
       </div>
 
 
-      <div className="max-w-6xl mx-auto mt-10 p-4">
-        <div className="bg-white shadow overflow-hidden">
-          <div className="flex justify-between items-center bg-gray-100 px-6 py-3 border-b">
-            <h2 className="text-lg font-semibold">Manage Rooms</h2>
+      <div className="max-w-7xl mx-auto p-6 ">
+          <div className="flex justify-between items-center mb-6 ">
+            <h2 className="text-2xl font-semibold">Manage Rooms</h2>
             <button className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded" onClick={handleAddNewRoom}>
               Add New Room
             </button>
           </div>
 
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-slate-800 text-white text-left">
-                <th className="px-6 py-2 font-medium">Room Name</th>
-                <th className="px-6 py-2 font-medium">floor</th>
-                <th className="px-6 py-2 font-medium">Capacity</th>
-                <th className="px-6 py-2 font-medium">Type</th>
-                <th className="px-6 py-2 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          
+            <div className="flex flex-wrap gap-[25px] justify-center mt-15">
+           
               {rooms.map((room, index) => (
-                <tr key={room.id} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
-                  <td className="px-6 py-2">{room.name}</td>
-                  <td className="px-6 py-2">{room.floor}</td>
-                  <td className="px-6 py-2">{room.capacity}</td>
-                  <td className="px-6 py-2">{room.type}</td>
-                  <td className="px-6 py-2">
-                    <button className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded text-sm mr-2" onClick={handleEdit}>
-                      Edit
-                    </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm" onClick={handleDelete}>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+               <div
+              key={index}
+              className="w-[200px] h-[200px] bg-gradient-to-br from-white via-blue-50 to-white rounded-2xl border border-gray-200 shadow-lg p-4 flex flex-col justify-between transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+            >
+              <div>
+                <p className="text-sm text-gray-500 font-semibold">
+                  ID: {room.id}
+                </p>
+                <p className="text-lg mt-1 text-gray-800 font-medium line-clamp-2">
+                  {room.name}
+                </p>
+              </div>
+
+              <div className="mt-auto flex justify-between">
+                <button className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold px-3 py-1.5 rounded-lg text-sm border border-cyan-700 shadow-md hover:shadow-lg hover:from-teal-600 hover:to-cyan-700 focus:outline-none" onClick={handleEdit}>
+                  Edit
+                </button>
+
+                <button className="bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold px-3 py-1.5 rounded-lg text-sm border border-rose-700 shadow-md hover:shadow-lg hover:from-red-600 hover:to-rose-600 focus:outline-none" onClick={handleDelete}>
+                  Delete
+                </button>
+              </div>
+            </div>
               ))}
-            </tbody>
-          </table>
+           
         </div>
-      </div>
+      
 
-
+ </div>
     </>
   );
 };

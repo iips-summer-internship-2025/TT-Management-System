@@ -2,82 +2,96 @@ import React from "react";
 import data from "../assets/academicData.json";
 import { useNavigate } from 'react-router-dom';
 
-const FacultyTable = () => {
-    const faculties = data.faculties;
+const ManageFaculty = () => {
+  const faculties = data.faculties;
 
-    const handleEdit = (id) => {
-        console.log("Edit Subject", id);
+   const handleEdit = (id) => {
+        console.log("Edit Faculty", id);
     }
 
-    const handleDelete = (id) => {
-        console.log("Delete Subject", id);
+   const handleDelete = (id) => {
+        console.log("Delete Faculty", id);
     }
 
-    const handleAddNewSubject = () => {
-        console.log("Add New Subject");
+    const handleAddNewFaculty = () => {
+        console.log("Add New Faculty");
     }
 
-    const navigate = useNavigate();
+     const navigate = useNavigate();
 
-    return (
+  
 
-        <>
-            <div className="bg-slate-800 text-white">
-                <div className="max-w-7xl mx-auto px-16 py-4 flex justify-around items-center">
-                    <h1 className="text-3xl font-bold leading-tight">
-                        IIPS Timetable Management<br />System
-                    </h1>
-                    <button className="border border-white text-white px-4 py-1 rounded hover:bg-white hover:text-slate-800 transition" onClick={() => navigate("/dashboard")}>
-                        Back to Dashboard
-                    </button>
-                </div>
+  return (
+    <>
+      <div className="bg-slate-800 text-white shadow-md">
+        <div className="max-w-7xl mx-auto px-16 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-semibold leading-tight">
+              IIPS Timetable Management <br />
+              System
+            </h1>
+          </div>
 
-                <div className="bg-gray-100 px-16 py-2 text-sm ">
-                    <span className="text-black font-semibold mr-4">Admin Panel</span>
-                    <span className="text-gray-500" >Dashboard</span>
-                </div>
+          <button
+            className="border border-white text-white px-5 py-2 rounded hover:bg-white hover:text-[#2c3e50] transition"
+            onClick={() => navigate("/dashboard")}
+          >
+            Back to Dashboard
+          </button>
+        </div>
+
+        <div className="bg-gray-100 text-black">
+          <div className="max-w-7xl mx-auto px-16 py-3 text-sm">
+            <span className="font-semibold">Admin Panel</span>
+            <span className="text-gray-400 ml-4">Dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6 ">
+        <div className="flex justify-between items-center mb-6 mt-6">
+          <h2 className="text-2xl font-bold text-gray-800">Manage Faculty</h2>
+          <button className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-lg shadow-md text-sm" onClick={handleAddNewFaculty}>
+            Add New Faculty
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-[25px] justify-center mt-15">
+          {faculties.map((faculty) => (
+            <div
+              key={faculty.id}
+              className="w-[250px] h-[250px] bg-gradient-to-br from-white via-blue-50 to-white rounded-2xl border border-gray-200 shadow-lg p-4 flex flex-col justify-between transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+            >
+              <div>
+                <p className="text-sm text-gray-500 font-semibold">
+                  ID: {faculty.id}
+                </p>
+                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                  {faculty.name}
+                </p>
+                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                  {faculty.email}
+                </p>
+                <p className="text-sm mt-1 text-gray-800 font-medium line-clamp-2">
+                  {faculty.phone}
+                </p>
+              </div>
+
+              <div className="mt-auto flex justify-between">
+                <button className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold px-3 py-1.5 rounded-lg text-sm border border-cyan-700 shadow-md hover:shadow-lg hover:from-teal-600 hover:to-cyan-700 focus:outline-none" onClick={handleEdit}>
+                  Edit
+                </button>
+
+                <button className="bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold px-3 py-1.5 rounded-lg text-sm border border-rose-700 shadow-md hover:shadow-lg hover:from-red-600 hover:to-rose-600 focus:outline-none" onClick={handleDelete}>
+                  Delete
+                </button>
+              </div>
             </div>
-
-            <div className="max-w-6xl mx-auto mt-10 p-4">
-                <div className="bg-white shadow rounded-lg overflow-hidden">
-                    <div className="flex justify-between items-center bg-gray-100 px-6 py-3 border-b">
-                        <h2 className="text-lg font-semibold">Manage Faculty</h2>
-                        <button className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded" onClick={handleAddNewSubject}>
-                            Add New Faculty
-                        </button>
-                    </div>
-
-                    <table className="w-full table-auto">
-                        <thead>
-                            <tr className="bg-slate-800 text-white text-left">
-                                <th className="px-6 py-2 font-medium">Name</th>
-                                <th className="px-6 py-2 font-medium">Desigination</th>
-                                <th className="px-6 py-2 font-medium">Department</th>
-                                <th className="px-6 py-2 font-medium">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {faculties.map((faculty, index) => (
-                                <tr key={faculty.id} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
-                                    <td className="px-6 py-2">{faculty.name}</td>
-                                    <td className="px-6 py-2">{faculty.designation}</td>
-                                    <td className="px-6 py-2">{faculty.department}</td>
-                                    <td className="px-6 py-2">
-                                        <button className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded text-sm mr-2" onClick={handleEdit}>
-                                            Edit
-                                        </button>
-                                        <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm" onClick={handleDelete}>
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </>
-    );
+          ))}
+        </div>
+      </div>
+    </>
+  );
 };
 
-export default FacultyTable;
+export default ManageFaculty;
