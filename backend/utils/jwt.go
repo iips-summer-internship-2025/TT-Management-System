@@ -9,9 +9,10 @@ import (
 )
 
 func GenerateToken(username string) (string, error) {
+	const tokenExpiry = 24 * 7 * time.Hour
 	claims := &jwt.RegisteredClaims{
 		Subject:   username,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * 7 * time.Hour)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpiry)),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
