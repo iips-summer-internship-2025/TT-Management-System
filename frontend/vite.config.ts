@@ -9,7 +9,6 @@ export default defineConfig({
         tailwindcss(),
         react()
     ],
-    base: '/TT-Management-System/',
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
