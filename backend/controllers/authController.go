@@ -7,13 +7,6 @@ import (
 	"tms-server/utils"
 )
 
-// TODO:
-// 1. Parse JSON input
-// 2. Validate credentials
-// 3. Generate JWT token
-// 4. Return token in response
-// 5. Set token in cookie
-
 func Ping(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "pong! TMS-server is up"})
 }
@@ -25,10 +18,26 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if input.Username == "admin" && input.Password == "admin" {
-		token, _ := utils.GenerateToken(input.Username)
-		c.JSON(http.StatusOK, gin.H{"token": token})
-	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+	user, err := utils.AuthenticateUser(input.Username, input.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
+
+	token, err := utils.GenerateToken(user.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
+
+	c.SetCookie(
+		"auth_token", token,
+		3600, // expires in 1 hour, @FIX: change to 7 days later (604800 seconds)
+		"/",
+		"",
+		true,
+		true,
+	)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login Successful"})
 }
