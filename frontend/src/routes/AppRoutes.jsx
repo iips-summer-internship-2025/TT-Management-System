@@ -9,9 +9,11 @@ import Rooms from "../pages/ManageRooms";
 import PrivateRoute from "../components/PrivateRoute";
 import { useAuth } from "../context/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
-import AdminDashboard from "../pages/logPage/AdminDashboard";
+import AdminDashboard from "../pages/logPage/AdminDashboard";    // for future use
 import FacultyDashboard from "../pages/logPage/FacultyDashboard";
 import UpdateTimeTable from "../pages/ViewTimeTable";
+import ManageCourses from "../pages/ManageCourses";
+import ManageFaculty from "../pages/ManageFaculty";
 
 
 const AppRoutes = () => {
@@ -23,10 +25,10 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route
-        path="/admin-dashboard"
+        path="/dashboard"
         element={
           // <PrivateRoute requiredRoles={["Admin"]}>
-            <AdminDashboard />
+            <Dashboard />
           // </PrivateRoute>
         }
       />
@@ -75,6 +77,23 @@ const AppRoutes = () => {
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <Rooms />
+          //</PrivateRoute>
+        }
+      />
+      
+      <Route
+        path="/manage-courses"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ManageCourses/>
+          //</PrivateRoute>
+        }
+      />
+      <Route
+        path="//manage-faculty"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ManageFaculty/>
           //</PrivateRoute>
         }
       />
