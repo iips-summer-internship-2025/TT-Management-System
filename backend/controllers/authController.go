@@ -14,6 +14,10 @@ import (
 // 4. Return token in response
 // 5. Set token in cookie
 
+func Ping(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "pong! TMS-server is up"})
+}
+
 func Login(c *gin.Context) {
 	var input models.User
 	if err := c.ShouldBindJSON(&input); err != nil {

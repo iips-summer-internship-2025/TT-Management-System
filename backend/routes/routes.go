@@ -1,31 +1,25 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"tms-server/controllers"
-	// "tms-server/middleware"
+	"tms-server/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(r *gin.Engine) {
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong! TMS-server is up"})
-	})
-
-	r.POST("/login", controllers.Login)
-
-	// TODO: protected routes
-
+	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api/v1")
 	{
-		// api.Use(middleware.JWTAuthMiddleware())
+		api.GET("/ping", controllers.Ping)
+		api.POST("/login", controllers.Login)
 
+		// api.Use(middleware.JWTAuthMiddleware())
 		course := api.Group("/course")
 		{
 			course.GET("/", controllers.CourseAll)
 			course.POST("/", controllers.CourseCreate)
 		}
-
 		subject := api.Group("/subject")
 		{
 			subject.GET("/", controllers.SubjectAll)
