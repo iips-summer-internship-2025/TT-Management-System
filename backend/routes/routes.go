@@ -19,6 +19,9 @@ func RegisterRoutes(r *gin.Engine) {
 		{
 			course.GET("/", controllers.CourseAll)
 			course.POST("/", controllers.CourseCreate)
+			course.GET("/:id", controllers.CourseGet)
+			course.PUT("/:id", controllers.CourseUpdate)
+			course.DELETE("/:id", controllers.CourseDelete)
 		}
 		subject := api.Group("/subject")
 		{
@@ -27,6 +30,22 @@ func RegisterRoutes(r *gin.Engine) {
 			subject.GET("/:id", controllers.SubjectGet)
 			subject.PUT("/:id", controllers.SubjectUpdate)
 			subject.DELETE("/:id", controllers.SubjectDelete)
+		}
+		faculty := api.Group("/faculty")
+		{
+			faculty.GET("/", controllers.FacultyAll)
+			faculty.POST("/", controllers.FacultyCreate)
+			faculty.GET("/:id", controllers.FacultyGet)
+			faculty.PUT("/:id", controllers.FacultyUpdate)
+			faculty.DELETE("/:id", controllers.FacultyDelete)
+		}
+		room := api.Group("/room")
+		{
+			room.GET("/", controllers.RoomAll)
+			room.POST("/", controllers.RoomCreate)
+			room.GET("/:id", controllers.RoomGet)
+			room.PUT("/:id", controllers.RoomUpdate)
+			room.DELETE("/:id", controllers.RoomDelete)
 		}
 	}
 }
