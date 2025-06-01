@@ -31,7 +31,7 @@ func RegisterRoutes(r *gin.Engine) {
 		subject := api.Group("/subject")
 		{
 			subject.GET("", controllers.All[models.Subject](db))
-			subject.POST("", controllers.All[models.Subject](db))
+			subject.POST("", controllers.Create[models.Subject](db))
 			subject.GET("/:id", controllers.Get[models.Subject](db))
 			subject.PUT("/:id", controllers.Update[models.Subject](db))
 			subject.DELETE("/:id", controllers.Delete[models.Subject](db))
