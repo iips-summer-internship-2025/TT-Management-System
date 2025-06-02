@@ -1,6 +1,6 @@
 package models
 
-type Timetable struct {
+type Lecture struct {
 	ID        uint   `gorm:"primaryKey"`
 	DayOfWeek string `gorm:"not null"` // e.g., Monday
 	StartTime string `gorm:"not null"` // Format: "09:00"
