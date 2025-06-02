@@ -1,285 +1,453 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
-import data from "../assets/academicData.json";
+import NavBar from "../components/NavBar";
+import Heading from "../components/Heading";
+import { FaEdit, FaTrash, FaPlus, FaTimes, FaBuilding, FaSpinner, FaSearch } from "react-icons/fa";
 
-// Sample initial data - replace with your actual data import
-const initialRoomsData = data.rooms;
+const ManageRooms = () => {
+    const [rooms, setRooms] = useState([]);
+    const [filteredRooms, setFilteredRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [showAddDialog, setShowAddDialog] = useState(false);
+    const [addingRoom, setAddingRoom] = useState(false);
+    const [editingRoom, setEditingRoom] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [newRoom, setNewRoom] = useState({
+        ID: "",
+        Name: "",
+        Capacity: ""
+    });
 
-function ManageRooms() {
-  const [rooms, setRooms] = useState(initialRoomsData);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    floor: '',
-    capacity: '',
-    type: ''
-  });
-  const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const handleEdit = (id) => {
-    console.log("Edit Room", id);
-  };
+    const API_BASE_URL = "http://localhost:8080/api/v1";
+    const API_ENDPOINTS = {
+        GET_ROOMS: `${API_BASE_URL}/room`,
+        ADD_ROOM: `${API_BASE_URL}/room`,
+        UPDATE_ROOM: (id) => `${API_BASE_URL}/room/${id}`,
+        DELETE_ROOM: (id) => `${API_BASE_URL}/room/${id}`
+    };
 
-  const handleDelete = (id) => {
-    console.log("Delete Room", id);
-    // Remove room from state
-    setRooms(rooms.filter(room => room.id !== id));
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Room name is required';
-    }
-    
-    if (!formData.floor.trim()) {
-      newErrors.floor = 'Floor is required';
-    }
-    
-    if (!formData.capacity || formData.capacity <= 0) {
-      newErrors.capacity = 'Valid capacity is required';
-    }
-    
-    if (!formData.type) {
-      newErrors.type = 'Room type is required';
-    }
-    
-    // Check if room name already exists
-    if (formData.name.trim() && rooms.some(room => 
-      room.name.toLowerCase() === formData.name.trim().toLowerCase()
-    )) {
-      newErrors.name = 'Room name already exists';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      // Create new room object
-      const newRoom = {
-        id: Math.max(...rooms.map(r => r.id)) + 1, // Simple ID generation
-        name: formData.name.trim(),
-        floor: formData.floor.trim(),
-        capacity: parseInt(formData.capacity),
-        type: formData.type
-      };
-
-      // Here you would typically make an API call to save to database
-      // const response = await fetch('/api/rooms', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(newRoom)
-      // });
-      
-      // For now, we'll just add to local state
-      setRooms(prev => [...prev, newRoom]);
-      
-      // Reset form and close dialog
-      setFormData({ name: '', floor: '', capacity: '', type: '' });
-      setErrors({});
-      setIsDialogOpen(false);
-      
-      console.log("New room added:", newRoom);
-      
-    } catch (error) {
-      console.error("Error adding room:", error);
-    }
-  };
-
-  const handleCancel = () => {
-    setFormData({ name: '', floor: '', capacity: '', type: '' });
-    setErrors({});
-    setIsDialogOpen(false);
-  };
-
-  return (
-    <>
-      <div className="bg-slate-800 text-white shadow-md">
-        <div className="max-w-7xl mx-auto px-16 py-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-semibold leading-tight">
-              IIPS Timetable Management <br />
-              System
-            </h1>
-          </div>
-
-          <button 
-            className="border border-white text-white px-5 py-2 rounded hover:bg-white hover:text-[#2c3e50] transition" 
-            onClick={() => navigate("/dashboard")}
-          >
-            Back to Dashboard
-          </button>
-        </div>
-
-        <div className="bg-gray-100 text-black">
-          <div className="max-w-7xl mx-auto px-16 py-3 text-sm">
-            <span className="font-semibold">Admin Panel</span>
-            <span className="text-gray-400 ml-4">Dashboard</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto mt-10 p-4">
-        <div className="bg-white shadow overflow-hidden">
-          <div className="flex justify-between items-center bg-gray-100 px-6 py-3 border-b">
-            <h2 className="text-lg font-semibold">Manage Rooms</h2>
+    const fetchRooms = async () => {
+        try {
+            setLoading(true);
+            setError(null);
             
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Room
-                </Button>
-              </DialogTrigger>
-              
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Add New Room</DialogTitle>
-                </DialogHeader>
-                
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="roomName">Room Name</Label>
-                    <Input
-                      id="roomName"
-                      type="text"
-                      placeholder="e.g., Room 101, Lab A"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      className={errors.name ? 'border-red-500' : ''}
-                    />
-                    {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                  </div>
+            const response = await fetch(API_ENDPOINTS.GET_ROOMS, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
 
-                  <div className="space-y-2">
-                    <Label htmlFor="floor">Floor</Label>
-                    <Input
-                      id="floor"
-                      type="text"
-                      placeholder="e.g., 1st Floor, Ground Floor"
-                      value={formData.floor}
-                      onChange={(e) => handleInputChange('floor', e.target.value)}
-                      className={errors.floor ? 'border-red-500' : ''}
-                    />
-                    {errors.floor && <p className="text-red-500 text-sm">{errors.floor}</p>}
-                  </div>
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-                  <div className="space-y-2">
-                    <Label htmlFor="capacity">Capacity</Label>
-                    <Input
-                      id="capacity"
-                      type="number"
-                      placeholder="e.g., 30"
-                      min="1"
-                      value={formData.capacity}
-                      onChange={(e) => handleInputChange('capacity', e.target.value)}
-                      className={errors.capacity ? 'border-red-500' : ''}
-                    />
-                    {errors.capacity && <p className="text-red-500 text-sm">{errors.capacity}</p>}
-                  </div>
+            const data = await response.json();
+            console.log('API Response:', data);
+            setRooms(data);
+            setFilteredRooms(data);
+        } catch (err) {
+            console.error('Error fetching rooms:', err);
+            setError('Failed to load rooms. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Room Type</Label>
-                    <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-                      <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
-                        <SelectValue placeholder="Select room type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Classroom">Classroom</SelectItem>
-                        <SelectItem value="Laboratory">Laboratory</SelectItem>
-                        <SelectItem value="Auditorium">Auditorium</SelectItem>
-                        <SelectItem value="Conference Room">Conference Room</SelectItem>
-                        <SelectItem value="Tutorial Room">Tutorial Room</SelectItem>
-                        <SelectItem value="Seminar Hall">Seminar Hall</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.type && <p className="text-red-500 text-sm">{errors.type}</p>}
-                  </div>
+    useEffect(() => {
+        fetchRooms();
+    }, []);
 
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button type="button" variant="outline" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-                      Add Room
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
+    useEffect(() => {
+        const results = rooms.filter(room =>
+            room.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            room.Capacity.toString().includes(searchTerm)
+        );
+        setFilteredRooms(results);
+    }, [searchTerm, rooms]);
 
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-slate-800 text-white text-left">
-                <th className="px-6 py-2 font-medium">Room Name</th>
-                <th className="px-6 py-2 font-medium">Floor</th>
-                <th className="px-6 py-2 font-medium">Capacity</th>
-                <th className="px-6 py-2 font-medium">Type</th>
-                <th className="px-6 py-2 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rooms.map((room, index) => (
-                <tr key={room.id} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
-                  <td className="px-6 py-2">{room.name}</td>
-                  <td className="px-6 py-2">{room.floor}</td>
-                  <td className="px-6 py-2">{room.capacity}</td>
-                  <td className="px-6 py-2">{room.type}</td>
-                  <td className="px-6 py-2">
-                    <button 
-                      className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded text-sm mr-2 inline-flex items-center"
-                      onClick={() => handleEdit(room.id)}
+    const handleSaveRoom = async () => {
+        if (!newRoom.Name.trim() || !newRoom.Capacity) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        try {
+            editingRoom ? setEditingRoom(true) : setAddingRoom(true);
+
+            const endpoint = editingRoom 
+                ? API_ENDPOINTS.UPDATE_ROOM(newRoom.ID)
+                : API_ENDPOINTS.ADD_ROOM;
+
+            const method = editingRoom ? 'PUT' : 'POST';
+
+            const roomData = {
+                Name: newRoom.Name.trim(),
+                Capacity: parseInt(newRoom.Capacity)
+            };
+
+            if (editingRoom) {
+                roomData.ID = newRoom.ID;
+            }
+
+            const response = await fetch(endpoint, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(roomData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Failed to ${editingRoom ? 'update' : 'add'} room`);
+            }
+
+            await fetchRooms();
+            resetForm();
+            setShowAddDialog(false);
+
+        } catch (err) {
+            console.error(`Error ${editingRoom ? 'updating' : 'adding'} room:`, err);
+            alert(`Failed to ${editingRoom ? 'update' : 'add'} room: ${err.message}`);
+        } finally {
+            setAddingRoom(false);
+            setEditingRoom(false);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(API_ENDPOINTS.DELETE_ROOM(id), {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            setRooms(rooms.filter(room => room.ID !== id));
+            setFilteredRooms(filteredRooms.filter(room => room.ID !== id));
+
+        } catch (err) {
+            console.error('Error deleting room:', err);
+            alert(`Failed to delete room: ${err.message}`);
+        }
+    };
+
+    const handleEdit = (room) => {
+        setNewRoom({
+            ID: room.ID,
+            Name: room.Name,
+            Capacity: room.Capacity
+        });
+        setEditingRoom(true);
+        setShowAddDialog(true);
+    };
+
+    const handleAddNewRoom = () => {
+        resetForm();
+        setShowAddDialog(true);
+    };
+
+    const handleCancel = () => {
+        resetForm();
+        setShowAddDialog(false);
+    };
+
+    const resetForm = () => {
+        setNewRoom({
+            ID: "",
+            Name: "",
+            Capacity: ""
+        });
+        setEditingRoom(false);
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                <NavBar />
+                <div className="flex items-center justify-center h-64">
+                    <div className="flex items-center space-x-3">
+                        <FaSpinner className="animate-spin text-blue-500 text-2xl" />
+                        <span className="text-slate-600 text-lg">Loading rooms...</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                <NavBar />
+                <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                        <div className="text-red-500 text-lg mb-4">{error}</div>
+                        <button
+                            onClick={fetchRooms}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <NavBar />
+
+            {/* Header Section */}
+            <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <Heading text="Manage Rooms" />
+                        <p className="text-slate-600 mt-2 text-sm sm:text-base">
+                            Add, edit, and manage rooms and their capacities
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => navigate("/dashboard")}
+                        className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
                     >
-                      <Edit2 className="w-3 h-3 mr-1" />
-                      Edit
+                        Back to Dashboard
                     </button>
-                    <button 
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm inline-flex items-center"
-                      onClick={() => handleDelete(room.id)}
-                    >
-                      <Trash2 className="w-3 h-3 mr-1" />
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="px-4 sm:px-6 lg:px-8 pb-8">
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+
+                    {/* Table Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50 px-6 py-4 border-b border-slate-200">
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-2 rounded-lg">
+                                <FaBuilding className="text-white text-lg" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-slate-800">Room Management</h2>
+                                <p className="text-sm text-slate-600">{filteredRooms.length} of {rooms.length} rooms</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <div className="relative w-full sm:w-64">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <FaSearch className="text-gray-400" />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search rooms..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                />
+                            </div>
+                            <button
+                                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
+                                onClick={handleAddNewRoom}
+                            >
+                                <FaPlus className="text-sm" />
+                                <span>Add Room</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-slate-800 text-white">
+                                    <th className="px-6 py-4 text-left font-semibold">Room Name</th>
+                                    <th className="px-6 py-4 text-left font-semibold">Capacity</th>
+                                    <th className="px-6 py-4 text-center font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredRooms.map((room) => (
+                                    <tr
+                                        key={`desktop-${room.ID}`}
+                                        className="hover:bg-blue-50 transition-colors duration-150"
+                                    >                                        
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-slate-800">{room.Name}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                                                {room.Capacity} seats
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex justify-center space-x-2">
+                                                <button
+                                                    className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                                                    onClick={() => handleEdit(room)}
+                                                    title="Edit Room"
+                                                >
+                                                    <FaEdit className="text-sm" />
+                                                </button>
+                                                <button
+                                                    className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                                                    onClick={() => handleDelete(room.ID)}
+                                                    title="Delete Room"
+                                                >
+                                                    <FaTrash className="text-sm" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden divide-y divide-slate-200">
+                        {filteredRooms.map((room) => (
+                            <div
+                                key={`mobile-${room.ID}`}
+                                className="p-4 hover:bg-slate-50 transition-colors duration-150"
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="font-medium text-slate-800">{room.Name}</div>
+                                    <div className="flex space-x-2">
+                                        <button
+                                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
+                                            onClick={() => handleEdit(room)}
+                                        >
+                                            <FaEdit className="text-sm" />
+                                        </button>
+                                        <button
+                                            className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
+                                            onClick={() => handleDelete(room.ID)}
+                                        >
+                                            <FaTrash className="text-sm" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="text-sm text-slate-600">
+                                    <span>{room.Capacity} seats</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Empty State */}
+                    {filteredRooms.length === 0 && !loading && (
+                        <div className="text-center py-12">
+                            <FaBuilding className="mx-auto text-slate-400 text-4xl mb-4" />
+                            <h3 className="text-lg font-medium text-slate-800 mb-2">
+                                {searchTerm ? "No matching rooms found" : "No Rooms Found"}
+                            </h3>
+                            <p className="text-slate-600 mb-4">
+                                {searchTerm ? "Try a different search term" : "Get started by adding your first room."}
+                            </p>
+                            {!searchTerm && (
+                                <button
+                                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center space-x-2 mx-auto shadow-sm font-medium"
+                                    onClick={handleAddNewRoom}
+                                >
+                                    <FaPlus />
+                                    <span>Add First Room</span>
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Add/Edit Room Dialog */}
+            {showAddDialog && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                        <div className="sticky top-0 bg-white flex items-center justify-between p-6 border-b border-slate-200 rounded-t-xl">
+                            <h3 className="text-lg font-semibold text-slate-800">
+                                {editingRoom ? "Edit Room" : "Add New Room"}
+                            </h3>
+                            <button
+                                onClick={handleCancel}
+                                className="text-slate-400 hover:text-slate-600 transition-colors duration-200"
+                                disabled={addingRoom}
+                            >
+                                <FaTimes className="text-xl" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label htmlFor="roomName" className="block text-sm font-medium text-slate-700 mb-2">
+                                    Room Name *
+                                </label>
+                                <input
+                                    id="roomName"
+                                    type="text"
+                                    value={newRoom.Name}
+                                    onChange={(e) => setNewRoom(prev => ({ ...prev, Name: e.target.value }))}
+                                    placeholder="Enter room name (e.g., Room 101)"
+                                    disabled={addingRoom}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="roomCapacity" className="block text-sm font-medium text-slate-700 mb-2">
+                                    Capacity *
+                                </label>
+                                <input
+                                    id="roomCapacity"
+                                    type="number"
+                                    min="1"
+                                    value={newRoom.Capacity}
+                                    onChange={(e) => setNewRoom(prev => ({ ...prev, Capacity: e.target.value }))}
+                                    placeholder="Enter room capacity"
+                                    disabled={addingRoom}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                                />
+                            </div>
+
+                            <div className="flex space-x-3 pt-4">
+                                <button
+                                    onClick={handleSaveRoom}
+                                    disabled={!newRoom.Name.trim() || !newRoom.Capacity || addingRoom}
+                                    className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-slate-300 disabled:to-slate-400 text-white py-3 px-4 rounded-lg transition-all duration-200 font-medium disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                                >
+                                    {addingRoom ? (
+                                        <>
+                                            <FaSpinner className="animate-spin" />
+                                            <span>{editingRoom ? "Updating..." : "Adding..."}</span>
+                                        </>
+                                    ) : (
+                                        <span>{editingRoom ? "Update Room" : "Add Room"}</span>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={handleCancel}
+                                    disabled={addingRoom}
+                                    className="flex-1 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 text-slate-700 py-3 px-4 rounded-lg transition-colors duration-200 font-medium disabled:cursor-not-allowed"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      </div>
-    </>
-  );
-}
+    );
+};
 
 export default ManageRooms;
