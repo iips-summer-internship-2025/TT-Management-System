@@ -62,12 +62,12 @@ All endpoints below require valid JWT authentication
 - `PUT /user/:id` - Update user
 - `DELETE /user/:id` - Delete user
 
-#### Timetable Management (Experimental)
-- `GET /timetable` - Get all timetable entries
-- `POST /timetable` - Create new timetable entry
-- `GET /timetable/:id` - Get single timetable entry
-- `PUT /timetable/:id` - Update timetable entry
-- `DELETE /timetable/:id` - Delete timetable entry
+#### Lecture Management (Experimental)
+- `GET /lecture` - Get all timetable entries
+- `POST /lecture` - Create new timetable entry
+- `GET /lecture/:id` - Get single timetable entry
+- `PUT /lecture/:id` - Update timetable entry
+- `DELETE /lecture/:id` - Delete timetable entry
 
 ---
 

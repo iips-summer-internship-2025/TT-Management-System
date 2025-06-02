@@ -53,7 +53,7 @@ func RegisterRoutes(r *gin.Engine) {
 			room.DELETE("/:id", controllers.Delete[models.Room](db))
 		}
 
-		// WARNING: Experimental: Using generic controllers User and Timetable
+		// WARNING: Experimental: Using generic controllers User and Lecture
 		user := api.Group("/user")
 		{
 			user.GET("", controllers.All[models.User](db))
@@ -62,13 +62,13 @@ func RegisterRoutes(r *gin.Engine) {
 			user.PUT("/:id", controllers.Update[models.User](db))
 			user.DELETE("/:id", controllers.Delete[models.User](db))
 		}
-		timetable := api.Group("/timetable")
+		timetable := api.Group("/lecture")
 		{
-			timetable.GET("", controllers.All[models.Timetable](db))
-			timetable.POST("", controllers.Create[models.Timetable](db))
-			timetable.GET("/:id", controllers.Get[models.Timetable](db))
-			timetable.PUT("/:id", controllers.Update[models.Timetable](db))
-			timetable.DELETE("/:id", controllers.Delete[models.Timetable](db))
+			timetable.GET("", controllers.All[models.Lecture](db))
+			timetable.POST("", controllers.Create[models.Lecture](db))
+			timetable.GET("/:id", controllers.Get[models.Lecture](db))
+			timetable.PUT("/:id", controllers.Update[models.Lecture](db))
+			timetable.DELETE("/:id", controllers.Delete[models.Lecture](db))
 		}
 	}
 }
