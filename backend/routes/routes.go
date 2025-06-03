@@ -53,6 +53,15 @@ func RegisterRoutes(r *gin.Engine) {
 			room.DELETE("/:id", controllers.Delete[models.Room](db))
 		}
 
+		batch := api.Group("/batch")  //ye part remove kardena agar error aaye toh 56 to 64
+		{
+			batch.GET("", controllers.All[models.Batch](db))
+			batch.POST("", controllers.Create[models.Batch](db))
+			batch.GET("/:id", controllers.Get[models.Batch](db))
+			batch.PUT("/:id", controllers.Update[models.Batch](db))
+			batch.DELETE("/:id", controllers.Delete[models.Batch](db))
+		}
+
 		// WARNING: Experimental: Using generic controllers User and Lecture
 		user := api.Group("/user")
 		{

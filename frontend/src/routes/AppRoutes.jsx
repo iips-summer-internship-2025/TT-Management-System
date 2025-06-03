@@ -14,6 +14,7 @@ import FacultyDashboard from "../pages/logPage/FacultyDashboard";
 import UpdateTimeTable from "../pages/ViewTimeTable";
 import ManageCourses from "../pages/ManageCourses";
 import ManageFaculty from "../pages/ManageFaculty";
+import ManageBatches from "../pages/ManageBatches";
 
 
 const AppRoutes = () => {
@@ -105,7 +106,17 @@ const AppRoutes = () => {
           //</PrivateRoute>
         }
       />
+
+      <Route 
+        path="/manage-batches"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ManageBatches/>
+          //</PrivateRoute>
+        }
+        />
     </Routes>
+    
   );
 };
 
