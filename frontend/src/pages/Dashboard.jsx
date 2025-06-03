@@ -3,7 +3,14 @@ import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
-import { FaBook, FaDoorOpen, FaPlus, FaEdit, FaUserTie, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import {
+  FaBook,
+  FaDoorOpen,
+  FaPlus,
+  FaEdit,
+  FaUserTie, FaSpinner, FaExclamationTriangle,
+  FaLayerGroup,
+} from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
 
 const Dashboard = () => {
@@ -104,29 +111,22 @@ const Dashboard = () => {
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
-      bgGradient: "from-emerald-50 to-emerald-100"
+      bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,
       title: "Subjects",
       icon: FaBook,
       iconColor: "bg-orange-500",
-      bgGradient: "from-orange-50 to-orange-100"
+      bgGradient: "from-orange-50 to-orange-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.rooms,
       title: "Rooms",
       icon: FaDoorOpen,
       iconColor: "bg-rose-500",
-      bgGradient: "from-rose-50 to-rose-100"
+      bgGradient: "from-rose-50 to-rose-100",
     },
-    {
-      heading: loading ? <FaSpinner className="animate-spin" /> : counts.courses,
-      title: "Courses",
-      icon: FaEdit,
-      iconColor: "bg-blue-500",
-      bgGradient: "from-blue-50 to-blue-100"
-    }
   ];
 
   const actionCards = [
@@ -136,7 +136,7 @@ const Dashboard = () => {
       icon: FaPlus,
       iconColor: "bg-blue-500",
       hoverColor: "hover:bg-blue-50",
-      route: "/create-timetable"
+      route: "/create-timetable",
     },
     {
       title: "View Tables",
@@ -144,7 +144,7 @@ const Dashboard = () => {
       icon: FaTableCells,
       iconColor: "bg-emerald-500",
       hoverColor: "hover:bg-emerald-50",
-      route: "/view-timetable"
+      route: "/view-timetable",
     },
     {
       title: "Manage Courses",
@@ -152,7 +152,7 @@ const Dashboard = () => {
       icon: FaEdit,
       iconColor: "bg-amber-500",
       hoverColor: "hover:bg-amber-50",
-      route: "/manage-courses"
+      route: "/manage-courses",
     },
     {
       title: "Manage Subjects",
@@ -160,7 +160,7 @@ const Dashboard = () => {
       icon: FaBook,
       iconColor: "bg-orange-500",
       hoverColor: "hover:bg-orange-50",
-      route: "/manage-subjects"
+      route: "/manage-subjects",
     },
     {
       title: "Manage Rooms",
@@ -168,7 +168,7 @@ const Dashboard = () => {
       icon: FaDoorOpen,
       iconColor: "bg-purple-500",
       hoverColor: "hover:bg-purple-50",
-      route: "/manage-rooms"
+      route: "/manage-rooms",
     },
     {
       title: "Manage Faculty",
@@ -176,8 +176,16 @@ const Dashboard = () => {
       icon: FaUserTie,
       iconColor: "bg-indigo-500",
       hoverColor: "hover:bg-indigo-50",
-      route: "/manage-faculty"
-    }
+      route: "/manage-faculty",
+    },
+    {
+      title: "Manage Batches",
+      description: "Organize batch details and schedules",
+      icon: FaLayerGroup, // A good icon to represent batches
+      iconColor: "bg-green-500",
+      hoverColor: "hover:bg-green-50",
+      route: "/manage-batches",
+    },
   ];
 
   const handleRetry = () => {
@@ -187,7 +195,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <NavBar />
-      
+
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
         <Heading text="Admin Dashboard" />
@@ -259,7 +267,9 @@ const Dashboard = () => {
               className={`bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer border border-slate-200 ${card.hoverColor} group`}
             >
               <div className="flex items-start space-x-4">
-                <div className={`${card.iconColor} p-3 rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-200`}>
+                <div
+                  className={`${card.iconColor} p-3 rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-200`}
+                >
                   <card.icon className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -271,13 +281,23 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              
+
               {/* Hover indicator */}
               <div className="mt-4 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="text-slate-400 text-xs flex items-center">
                   Click to access
-                  <svg className="w-3 h-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-3 h-3 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
