@@ -14,7 +14,7 @@ func Migrate() error {
 		&models.Batch{},
 		&models.Subject{},
 		&models.Room{},
-		&models.Timetable{},
+		&models.Lecture{},
 	)
 	return err
 }
