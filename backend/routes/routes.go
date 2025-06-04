@@ -79,5 +79,14 @@ func RegisterRoutes(r *gin.Engine) {
 			timetable.PUT("/:id", controllers.Update[models.Lecture](db))
 			timetable.DELETE("/:id", controllers.Delete[models.Lecture](db))
 		}
+
+		session := api.Group("/session")
+		{
+			session.GET("", controllers.All[models.Session](db))
+			session.POST("", controllers.Create[models.Session](db))
+			session.GET("/:id", controllers.Get[models.Session](db))
+			session.PUT("/:id", controllers.Update[models.Session](db))
+			session.DELETE("/:id", controllers.Delete[models.Session](db))
+		}
 	}
 }
