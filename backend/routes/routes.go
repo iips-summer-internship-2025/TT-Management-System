@@ -53,6 +53,14 @@ func RegisterRoutes(r *gin.Engine) {
 			room.PUT("/:id", controllers.Update[models.Room](db))
 			room.DELETE("/:id", controllers.Delete[models.Room](db))
 		}
+		batch := api.Group("/batch")
+		{
+			batch.GET("", controllers.All[models.Batch](db))
+			batch.POST("", controllers.Create[models.Batch](db))
+			batch.GET("/:id", controllers.Get[models.Batch](db))
+			batch.PUT("/:id", controllers.Update[models.Batch](db))
+			batch.DELETE("/:id", controllers.Delete[models.Batch](db))
+		}
 
 		// WARNING: Experimental: Using generic controllers User and Lecture
 		user := api.Group("/user")
