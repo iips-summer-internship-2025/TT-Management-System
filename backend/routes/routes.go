@@ -17,10 +17,10 @@ func RegisterRoutes(r *gin.Engine) {
 	{
 		api.GET("/ping", controllers.Ping)
 		api.POST("/login", controllers.Login)
-		api.POST("/logout", controllers.Logout)
 
 		// INFO: Protected routes
 		api.Use(middleware.JWTAuthMiddleware())
+		api.POST("/logout", controllers.Logout)
 		course := api.Group("/course")
 		{
 			course.GET("", controllers.All[models.Course](db))
