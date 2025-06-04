@@ -32,7 +32,7 @@ func Login(c *gin.Context) {
 
 	c.SetCookie(
 		"auth_token", token,
-		3600, // expires in 1 hour, @FIXME: change to 7 days later (604800 seconds)
+		604800, // expires in 7 days (604800 seconds)
 		"/",
 		"",
 		true,
