@@ -32,7 +32,7 @@ func Login(c *gin.Context) {
 
 	c.SetCookie(
 		"auth_token", token,
-		3600, // expires in 1 hour, @FIX: change to 7 days later (604800 seconds)
+		3600, // expires in 1 hour, @FIXME: change to 7 days later (604800 seconds)
 		"/",
 		"",
 		true,
@@ -40,4 +40,18 @@ func Login(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login Successful"})
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie(
+		"auth_token",
+		"",
+		-1,
+		"/",
+		"",
+		true,
+		true,
+	)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }
