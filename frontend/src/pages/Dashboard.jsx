@@ -32,13 +32,12 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        
-        // Fetch all counts in parallel
+        // Fetch all counts in parallel, including credentials (cookies)
         const responses = await Promise.all([
-          fetch(API_ENDPOINTS.FACULTY_COUNT),
-          fetch(API_ENDPOINTS.SUBJECT_COUNT),
-          fetch(API_ENDPOINTS.ROOM_COUNT),
-          fetch(API_ENDPOINTS.COURSE_COUNT)
+          fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
         ]);
 
         // Check for errors
