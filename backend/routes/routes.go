@@ -3,6 +3,7 @@ package routes
 import (
 	"tms-server/controllers"
 	"tms-server/middleware"
+	"your_project/handlers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,4 +30,10 @@ func RegisterRoutes(r *gin.Engine) {
 			subject.DELETE("/:id", controllers.SubjectDelete)
 		}
 	}
+}
+
+func LogoutRoutes() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/logout", handlers.LogoutHandler).Methods("POST")
+	return r
 }

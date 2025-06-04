@@ -1,4 +1,5 @@
 package middleware
+package handlers
 
 import (
 	"net/http"
@@ -36,4 +37,21 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		c.Set("username", claims.Subject)
 		c.Next()
 	}
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Clear the JWT cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token", // match the name used in login
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // change to true in production with HTTPS
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   -1, // immediately expire
+	})
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"message":"Logged out successfully"}`))
 }

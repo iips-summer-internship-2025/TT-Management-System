@@ -39,11 +39,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await axios.post('/logout', {}, { withCredentials: true });   //change route if needed
-    setIsAuthenticated(false);
-    setUserRole(null);
-    setUserInfo(null);
-    navigate('/');
+    try{
+      await axios.post('/logout', {}, { withCredentials: true });   //change route if needed
+    }
+    catch{
+      alert('Logout failed. Check your credentials.');
+    }
+    finally{
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setUserInfo(null);
+      navigate('/');
+    }
   };
 
   useEffect(() => {

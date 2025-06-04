@@ -13,11 +13,28 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    await login(username, password);
-    console.log("Login attempted with:", username, password);
-  };
+  const handleLogin = (event) => {
+  event.preventDefault();
+
+  const storedUsername = localStorage.getItem("username");
+  const storedPassword = localStorage.getItem("password");
+
+  const isValidDemo =
+    (username === "admin" && password === "admin123") ||
+    (username === "user" && password === "user123");
+
+  const isValidStored =
+    username === storedUsername && password === storedPassword;
+
+  if (isValidDemo || isValidStored) {
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("currentUser", username);
+    alert("Login successful!");
+    navigate("/dashboard");
+  } else {
+    alert("Invalid username or password.");
+}
+};
 
   const currentYear = new Date().getFullYear();
 

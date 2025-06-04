@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:5000', // backend API base
+  baseURL: 'http://localhost:5173', // backend API base
+    // baseURL: process.env.Base_URL, // backend API base
   withCredentials: true,
 });
 
