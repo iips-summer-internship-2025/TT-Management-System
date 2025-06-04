@@ -9,133 +9,104 @@ function ViewTimeTable() {
   const [selectedCourse, setSelectedCourse] = useState('all');
   const [selectedFaculty, setSelectedFaculty] = useState('all');
   const [selectedSemester, setSelectedSemester] = useState('all');
+  // const [attendanceData, setAttendanceData] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showAttendance, setShowAttendance] = useState(false);
   const modalRef = useRef(null);
 
-  // Sample attendance data - replace with your actual data source
+  // Sample attendance data
   const attendanceData = {
-    '2025-05-01': [
-      {
-        id: 'class-1',
-        facultyId: 'dr-smith',
-        subjectId: 'csc201',
-        courseId: 'btech-cs-a',
-        semester: '3',
-        roomId: 'room-101',
-        timeSlot: '09:00-10:00',
-        day: 'Thursday',
-        taken: true,
-        studentsPresent: 65,
-        totalStudents: 70
-      },
-      {
-        id: 'class-2',
-        facultyId: 'dr-brown',
-        subjectId: 'it201',
-        courseId: 'btech-it-a',
-        semester: '3',
-        roomId: 'room-102',
-        timeSlot: '10:00-11:00',
-        day: 'Thursday',
-        taken: false,
-        studentsPresent: 0,
-        totalStudents: 65
-      },
-      {
-        id: 'class-3',
-        facultyId: 'prof-green',
-        subjectId: 'mca501',
-        courseId: 'mca-sec-a',
-        semester: '5',
-        roomId: 'room-201',
-        timeSlot: '11:00-12:00',
-        day: 'Thursday',
-        taken: true,
-        studentsPresent: 58,
-        totalStudents: 60
-      }
-    ],
-    '2025-05-15': [
-      {
-        id: 'class-4',
-        facultyId: 'dr-smith',
-        subjectId: 'csc202',
-        courseId: 'btech-cs-a',
-        semester: '4',
-        roomId: 'room-101',
-        timeSlot: '09:00-10:00',
-        day: 'Thursday',
-        taken: true,
-        studentsPresent: 68,
-        totalStudents: 70
-      },
-      {
-        id: 'class-5',
-        facultyId: 'prof-white',
-        subjectId: 'csc301',
-        courseId: 'btech-cs-b',
-        semester: '5',
-        roomId: 'room-202',
-        timeSlot: '10:00-11:00',
-        day: 'Thursday',
-        taken: true,
-        studentsPresent: 66,
-        totalStudents: 70
-      },
-      {
-        id: 'class-6',
-        facultyId: 'dr-brown',
-        subjectId: 'it301',
-        courseId: 'btech-it-b',
-        semester: '6',
-        roomId: 'lab-301',
-        timeSlot: '14:00-15:00',
-        day: 'Thursday',
-        taken: false,
-        studentsPresent: 0,
-        totalStudents: 65
-      }
-    ],
-    '2025-05-20': [
-      {
-        id: 'class-7',
-        facultyId: 'dr-johnson',
-        subjectId: 'mth201',
-        courseId: 'btech-cs-a',
-        semester: '3',
-        roomId: 'room-103',
-        timeSlot: '09:00-10:00',
-        day: 'Tuesday',
-        taken: false,
-        studentsPresent: 0,
-        totalStudents: 70
-      },
-      {
-        id: 'class-8',
-        facultyId: 'prof-green',
-        subjectId: 'mca502',
-        courseId: 'mca-sec-a',
-        semester: '6',
-        roomId: 'room-201',
-        timeSlot: '11:00-12:00',
-        day: 'Tuesday',
-        taken: true,
-        studentsPresent: 55,
-        totalStudents: 60
-      },
-      {
-        id: 'class-9',
-        facultyId: 'prof-anderson',
-        subjectId: 'mca501',
-        courseId: 'mca-sec-b',
-        semester: '5',
-        roomId: 'room-108',
-        timeSlot: '15:00-16:00',
-        day: 'Tuesday',
-        taken: true,
-        studentsPresent: 59,
-        totalStudents: 60
-      }
+    data: [
+        {
+            "date": "2025-05-25",
+            "total_held": 2,
+            "total_cancelled": 1,
+            "no_data": 5
+        },
+        {
+            "date": "2025-05-26",
+            "total_held": 1,
+            "total_cancelled": 0,
+            "no_data": 3
+        },
+        {
+            "date": "2025-05-27",
+            "total_held": 3,
+            "total_cancelled": 2,
+            "no_data": 2
+        },
+        {
+            "date": "2025-05-28",
+            "total_held": 0,
+            "total_cancelled": 1,
+            "no_data": 6
+        },
+        {
+            "date": "2025-05-29",
+            "total_held": 2,
+            "total_cancelled": 0,
+            "no_data": 4
+        },
+        {
+            "date": "2025-05-30",
+            "total_held": 1,
+            "total_cancelled": 0,
+            "no_data": 3
+        },
+        {
+            "date": "2025-05-31",
+            "total_held": 3,
+            "total_cancelled": 1,
+            "no_data": 2
+        },
+        {
+            "date": "2025-06-01",
+            "total_held": 2,
+            "total_cancelled": 0,
+            "no_data": 4
+        },
+        {
+            "date": "2025-06-02",
+            "total_held": 0,
+            "total_cancelled": 1,
+            "no_data": 5
+        },
+        {
+            "date": "2025-06-03",
+            "total_held": 1,
+            "total_cancelled": 2,
+            "no_data": 2
+        },
+        {
+            "date": "2025-06-04",
+            "total_held": 2,
+            "total_cancelled": 0,
+            "no_data": 3
+        },
+        {
+            "date": "2025-06-05",
+            "total_held": 3,
+            "total_cancelled": 1,
+            "no_data": 2
+        },
+        {
+            "date": "2025-06-06",
+            "total_held": 1,
+            "total_cancelled": 0,
+            "no_data": 4
+        },
+        {
+            "date": "2025-06-07",
+            "total_held": 1,
+            "total_cancelled": 0,
+            "no_data": 4
+        },
+        {
+            "date": "2025-06-08",
+            "total_held": 1,
+            "total_cancelled": 0,
+            "no_data": 3
+        }
     ]
   };
 
@@ -169,6 +140,16 @@ function ViewTimeTable() {
   const getClassesForDate = (date) => {
     const dateKey = formatDateKey(date);
     return attendanceData[dateKey] || [];
+  };
+
+  // Helper to get attendance data for a date
+  const getAttendanceForDate = (date) => {
+    const dateKey = formatDateKey(date);
+    return attendanceData.data.find(item => item.date === dateKey) || {
+      total_held: 0,
+      total_cancelled: 0,
+      no_data: 0
+    };
   };
 
   const getFilteredClasses = (classes) => {
@@ -306,6 +287,20 @@ function ViewTimeTable() {
                   ))}
                 </select>
               </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-600 mb-1">Attendance</label>
+                <button
+                  onClick={() => setShowAttendance(!showAttendance)}
+                  className={`px-3 py-2 border rounded-md transition-colors ${
+                    showAttendance
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {showAttendance ? 'Hide Attendance' : 'Show Attendance'}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -368,6 +363,7 @@ function ViewTimeTable() {
               const status = getAttendanceStatus(day);
               const isToday = day.toDateString() === new Date().toDateString();
               const classCount = getFilteredClasses(getClassesForDate(day)).length;
+              const attendanceForDate = getAttendanceForDate(day);
               
               let bgColor = 'bg-white hover:bg-gray-50';
               let indicator = '';
@@ -399,7 +395,39 @@ function ViewTimeTable() {
                     <span className={`text-sm font-medium ${isToday ? 'text-blue-600 font-bold' : 'text-gray-700'}`}>
                       {day.getDate()}
                     </span>
-                    {status !== 'no-data' && (
+                    
+                    {/* Attendance Summary */}
+                    {showAttendance && (
+                      <div className="flex flex-col items-center mt-1">
+                        <div className="flex space-x-1">
+                          {/* Held Classes */}
+                          {attendanceForDate.total_held > 0 && (
+                            <div className="flex items-center">
+                              <Check className="w-3 h-3 text-green-500" />
+                              <span className="text-xs ml-0.5">{attendanceForDate.total_held}</span>
+                            </div>
+                          )}
+                          
+                          {/* Cancelled Classes */}
+                          {attendanceForDate.total_cancelled > 0 && (
+                            <div className="flex items-center">
+                              <X className="w-3 h-3 text-red-500" />
+                              <span className="text-xs ml-0.5">{attendanceForDate.total_cancelled}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* No Data Indicator */}
+                        {attendanceForDate.no_data > 0 && (
+                          <div className="text-xs text-gray-400 mt-0.5">
+                            {attendanceForDate.no_data} no data
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Original Class Count */}
+                    {!showAttendance && status !== 'no-data' && (
                       <div className="flex items-center gap-1 mt-1">
                         <div className={`w-2 h-2 rounded-full ${indicator}`}></div>
                         {classCount > 0 && (
