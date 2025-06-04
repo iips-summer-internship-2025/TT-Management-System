@@ -1,11 +1,10 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"tms-server/models"
 	"tms-server/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func Ping(c *gin.Context) {
@@ -19,14 +18,9 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	user, err := utils.AuthenticateUser(input.Username)
+	user, err := utils.AuthenticateUser(input.Username, input.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		return
-	}
-	//password
-	if err := utils.CheckPassword(input.Password, user.Password); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
 		return
 	}
 
