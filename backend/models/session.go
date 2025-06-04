@@ -3,8 +3,8 @@ package models
 import "time"
 
 type Session struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
-	LectureID uint      `json:"lecture_id"`
-	Date      time.Time `json:"date"`
-	Status    string    `json:"status"`
+	ID        uint      `gorm:"primaryKey"`
+	LectureID uint      `grom:"notnull"`
+	Date      time.Time `grom:"notnull"`
+	Status    string    `grom:"notnull"`
 }
