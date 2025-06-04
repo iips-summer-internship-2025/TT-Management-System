@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"os"
 	"time"
 
@@ -8,9 +9,10 @@ import (
 )
 
 func GenerateToken(username string) (string, error) {
+	const tokenExpiry = 24 * 7 * time.Hour
 	claims := &jwt.RegisteredClaims{
 		Subject:   username,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpiry)),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -18,15 +20,14 @@ func GenerateToken(username string) (string, error) {
 }
 
 func ValidateToken(tokenString string) (*jwt.RegisteredClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (any, error) {
+		return []byte(os.Getenv("APP_JWT_SECRET")), nil
 	})
-
-	if err != nil {
-		return nil, err
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
 	}
 
-	if claims, ok := token.Claims.(*jwt.RegisteredClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*jwt.RegisteredClaims); ok {
 		return claims, nil
 	}
 

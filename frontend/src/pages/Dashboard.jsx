@@ -1,38 +1,135 @@
+import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
-import { FaBook, FaDoorOpen, FaPlus, FaEdit, FaUserTie } from "react-icons/fa";
+import { FaBook, FaDoorOpen, FaPlus, FaEdit, FaUserTie, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
 import data from "../assets/academicData.json";
 // import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [counts, setCounts] = useState({
+    faculties: 0,
+    subjects: 0,
+    rooms: 0,
+    courses: 0
+  });
+
+  const API_BASE_URL = "http://localhost:8080/api/v1";
+  const API_ENDPOINTS = {
+    FACULTY_COUNT: `${API_BASE_URL}/faculty`,
+    SUBJECT_COUNT: `${API_BASE_URL}/subject`,
+    ROOM_COUNT: `${API_BASE_URL}/room`,
+    COURSE_COUNT: `${API_BASE_URL}/course`
+  };
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch all counts in parallel
+        const responses = await Promise.all([
+          fetch(API_ENDPOINTS.FACULTY_COUNT),
+          fetch(API_ENDPOINTS.SUBJECT_COUNT),
+          fetch(API_ENDPOINTS.ROOM_COUNT),
+          fetch(API_ENDPOINTS.COURSE_COUNT)
+        ]);
+
+        // Check for errors
+        for (const response of responses) {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        }
+
+        // Parse all responses
+        const [facultyData, subjectData, roomData, courseData] = await Promise.all([
+          responses[0].json(),
+          responses[1].json(),
+          responses[2].json(),
+          responses[3].json()
+        ]);
+
+        // console.log('Fetched data:', { facultyData, subjectData, roomData, courseData });
+
+        // Handle both array responses and object responses with count property
+        const getCount = (data) => {
+          if (Array.isArray(data)) {
+            return data.length;
+          } else if (data && typeof data === 'object') {
+            return data.count || data.total || data.length || 0;
+          }
+          return 0;
+        };
+
+        setCounts({
+          faculties: getCount(facultyData),
+          subjects: getCount(subjectData),
+          rooms: getCount(roomData),
+          courses: getCount(courseData)
+        });
+
+        // console.log("Final counts:", {
+        //   faculties: getCount(facultyData),
+        //   subjects: getCount(subjectData), 
+        //   rooms: getCount(roomData),
+        //   courses: getCount(courseData)
+        // });
+
+      } catch (err) {
+        console.error('Error fetching counts:', err);
+        setError('Failed to load dashboard data. Please check your connection and try again.');
+        // Set default values on error
+        setCounts({
+          faculties: 0,
+          subjects: 0,
+          rooms: 0,
+          courses: 0
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCounts();
+  }, []);
   const { logout } = useAuth();
 
   const statsCards = [
     {
-      heading: data.faculties.length,
+      heading: loading ? <FaSpinner className="animate-spin" /> : counts.faculties,
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
       bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
-      heading: data.subjects.length,
+      heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,
       title: "Subjects",
       icon: FaBook,
       iconColor: "bg-orange-500",
       bgGradient: "from-orange-50 to-orange-100",
     },
     {
-      heading: data.rooms.length,
+      heading: loading ? <FaSpinner className="animate-spin" /> : counts.rooms,
       title: "Rooms",
       icon: FaDoorOpen,
       iconColor: "bg-rose-500",
-      bgGradient: "from-rose-50 to-rose-100",
+      bgGradient: "from-rose-50 to-rose-100"
     },
+    {
+      heading: loading ? <FaSpinner className="animate-spin" /> : counts.courses,
+      title: "Courses",
+      icon: FaEdit,
+      iconColor: "bg-blue-500",
+      bgGradient: "from-blue-50 to-blue-100"
+    }
   ];
 
   const actionCards = [
@@ -86,6 +183,10 @@ const Dashboard = () => {
     },
   ];
 
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <NavBar onLogout={logout} />
@@ -99,9 +200,27 @@ const Dashboard = () => {
         </p>
       </div>
 
+      {/* Error Alert */}
+      {error && (
+        <div className="px-4 sm:px-6 lg:px-8 pb-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
+            <FaExclamationTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-red-800 text-sm">{error}</p>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Statistics Cards Section */}
       <div className="px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {statsCards.map((card, index) => (
             <div
               key={index}
