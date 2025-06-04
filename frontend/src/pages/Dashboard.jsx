@@ -6,7 +6,7 @@ import { MdGroups } from "react-icons/md";
 import { FaBook, FaDoorOpen, FaPlus, FaEdit, FaUserTie, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
 import data from "../assets/academicData.json";
-// import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();

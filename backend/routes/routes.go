@@ -5,7 +5,6 @@ import (
 	"tms-server/controllers"
 	"tms-server/middleware"
 	"tms-server/models"
-	"your_project/handlers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +19,7 @@ func RegisterRoutes(r *gin.Engine) {
 		api.POST("/login", controllers.Login)
 
 		// INFO: Protected routes
-		api.Use(middleware.JWTAuthMiddleware())
+		// api.Use(middleware.JWTAuthMiddleware())
 		api.POST("/logout", controllers.Logout)
 		course := api.Group("/course")
 		{
@@ -73,10 +72,4 @@ func RegisterRoutes(r *gin.Engine) {
 			timetable.DELETE("/:id", controllers.Delete[models.Lecture](db))
 		}
 	}
-}
-
-func LogoutRoutes() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/logout", handlers.LogoutHandler).Methods("POST")
-	return r
 }

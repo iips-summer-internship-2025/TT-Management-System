@@ -1,16 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 
 const instance = axios.create({
-  baseURL: 'http://localhost:5173', // backend API base
-    // baseURL: process.env.Base_URL, // backend API base
+  baseURL: "http://localhost:8080", // backend API base
+  // baseURL: process.env.Base_URL, // backend API base
   withCredentials: true,
 });
 
 instance.interceptors.response.use(
-  res => res,
-  err => {
+  (res) => res,
+  (err) => {
     if (err.response && err.response.status === 401) {
-      window.location.href = '/';
+      window.location.href = "/";
     }
     return Promise.reject(err);
   }
