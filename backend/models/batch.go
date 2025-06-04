@@ -7,5 +7,5 @@ type Batch struct {
 	Semester uint   `gorm:"not null"`
 	CourseID uint   `gorm:"not null"`
 	Course   Course
-	// Timetables []Timetable // TODO: create batch associated Timetable strcut -> collection of Lectures (IDs)
+	Lectures []Lecture
 }
