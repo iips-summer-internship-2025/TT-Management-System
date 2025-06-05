@@ -24,7 +24,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	//password
+	// Verify the provided password against the stored hash for the authenticated user.
 	if err := utils.CheckPassword(input.Password, user.Password); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid username or password"})
 		return
