@@ -3,7 +3,14 @@ import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
-import { FaBook, FaDoorOpen, FaPlus, FaEdit, FaUserTie, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import {
+  FaBook,
+  FaDoorOpen,
+  FaPlus,
+  FaEdit,
+  FaUserTie, FaSpinner, FaExclamationTriangle,
+  FaLayerGroup,
+} from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
 import data from "../assets/academicData.json";
 import { useAuth } from '../context/AuthContext';
@@ -107,6 +114,7 @@ const Dashboard = () => {
       icon: MdGroups,
       iconColor: "bg-emerald-500",
       bgGradient: "from-emerald-50 to-emerald-100",
+      bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,
@@ -120,15 +128,8 @@ const Dashboard = () => {
       title: "Rooms",
       icon: FaDoorOpen,
       iconColor: "bg-rose-500",
-      bgGradient: "from-rose-50 to-rose-100"
+      bgGradient: "from-rose-50 to-rose-100",
     },
-    {
-      heading: loading ? <FaSpinner className="animate-spin" /> : counts.courses,
-      title: "Courses",
-      icon: FaEdit,
-      iconColor: "bg-blue-500",
-      bgGradient: "from-blue-50 to-blue-100"
-    }
   ];
 
   const actionCards = [
@@ -179,6 +180,14 @@ const Dashboard = () => {
       iconColor: "bg-indigo-500",
       hoverColor: "hover:bg-indigo-50",
       route: "/manage-faculty",
+    },
+    {
+      title: "Manage Batches",
+      description: "Organize batch details and schedules",
+      icon: FaLayerGroup, // A good icon to represent batches
+      iconColor: "bg-green-500",
+      hoverColor: "hover:bg-green-50",
+      route: "/manage-batches",
     },
   ];
 
