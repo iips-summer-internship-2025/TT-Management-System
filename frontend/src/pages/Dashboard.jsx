@@ -12,6 +12,8 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
+import data from "../assets/academicData.json";
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -37,13 +39,12 @@ const Dashboard = () => {
       try {
         setLoading(true);
         setError(null);
-        
-        // Fetch all counts in parallel
+        // Fetch all counts in parallel, including credentials (cookies)
         const responses = await Promise.all([
-          fetch(API_ENDPOINTS.FACULTY_COUNT),
-          fetch(API_ENDPOINTS.SUBJECT_COUNT),
-          fetch(API_ENDPOINTS.ROOM_COUNT),
-          fetch(API_ENDPOINTS.COURSE_COUNT)
+          fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
         ]);
 
         // Check for errors
@@ -104,6 +105,7 @@ const Dashboard = () => {
 
     fetchCounts();
   }, []);
+  const { logout } = useAuth();
 
   const statsCards = [
     {
@@ -111,6 +113,7 @@ const Dashboard = () => {
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
+      bgGradient: "from-emerald-50 to-emerald-100",
       bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
@@ -194,7 +197,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <NavBar />
+      <NavBar onLogout={logout} />
+      {/* <NavBar  /> */}
 
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

@@ -6,5 +6,5 @@ type Batch struct {
 	Section  string `gorm:"not null"` // e.g., A, B
 	CourseID uint   `gorm:"not null"`
 	Course   Course
-	// Timetables []Timetable
+	Lectures []Lecture
 }
