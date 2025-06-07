@@ -19,7 +19,8 @@ func RegisterRoutes(r *gin.Engine) {
 		api.POST("/login", controllers.Login)
 
 		// INFO: Protected routes
-		// api.Use(middleware.JWTAuthMiddleware())
+		api.Use(middleware.JWTAuthMiddleware())
+		api.POST("/logout", controllers.Logout)
 		course := api.Group("/course")
 		{
 			course.GET("", controllers.All[models.Course](db))
@@ -52,8 +53,14 @@ func RegisterRoutes(r *gin.Engine) {
 			room.PUT("/:id", controllers.Update[models.Room](db))
 			room.DELETE("/:id", controllers.Delete[models.Room](db))
 		}
-
-		// WARNING: Experimental: Using generic controllers User and Lecture
+		batch := api.Group("/batch")
+		{
+			batch.GET("", controllers.All[models.Batch](db))
+			batch.POST("", controllers.Create[models.Batch](db))
+			batch.GET("/:id", controllers.Get[models.Batch](db))
+			batch.PUT("/:id", controllers.Update[models.Batch](db))
+			batch.DELETE("/:id", controllers.Delete[models.Batch](db))
+		}
 		user := api.Group("/user")
 		{
 			user.GET("", controllers.All[models.User](db))
@@ -62,18 +69,25 @@ func RegisterRoutes(r *gin.Engine) {
 			user.PUT("/:id", controllers.Update[models.User](db))
 			user.DELETE("/:id", controllers.Delete[models.User](db))
 		}
-		timetable := api.Group("/lecture")
+		lecture := api.Group("/lecture")
 		{
-			timetable.GET("", controllers.All[models.Lecture](db))
-			timetable.POST("", controllers.Create[models.Lecture](db))
-			timetable.GET("/:id", controllers.Get[models.Lecture](db))
-			timetable.PUT("/:id", controllers.Update[models.Lecture](db))
-			timetable.DELETE("/:id", controllers.Delete[models.Lecture](db))
+			lecture.GET("", controllers.FilteredLectures(db))
+			lecture.POST("", controllers.Create[models.Lecture](db))
+			lecture.GET("/:id", controllers.Get[models.Lecture](db))
+			lecture.PUT("/:id", controllers.Update[models.Lecture](db))
+			lecture.DELETE("/:id", controllers.Delete[models.Lecture](db))
+		}
+		session := api.Group("/session")
+		{
+			session.GET("", controllers.All[models.Session](db))
+			session.POST("", controllers.Create[models.Session](db))
+			session.GET("/:id", controllers.Get[models.Session](db))
+			session.PUT("/:id", controllers.Update[models.Session](db))
+			session.DELETE("/:id", controllers.Delete[models.Session](db))
 		}
 		calendar := api.Group("/calendar")
 		{
 			calendar.GET("/", controllers.GetCalendarSummaryByDate)
 		}
-
 	}
 }
