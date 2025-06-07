@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"time"
 	"github.com/gin-gonic/gin"
 	"tms-server/config"
 	"tms-server/models"
@@ -81,10 +80,8 @@ func GetCalendarSummaryByDate(c *gin.Context) {
 	// Result ka format (you can make changes accordingly)
 	result := []gin.H{}
 	for dateStr, stat := range summary {
-		parsedDate, _ := time.Parse("2006-01-02", dateStr)
 		result = append(result, gin.H{
 			"date":         dateStr,
-			"year":         parsedDate.Year(),
 			"total_held":   stat.Held,
 			"total_missed": stat.Missed,
 		})
