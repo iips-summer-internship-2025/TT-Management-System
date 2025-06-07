@@ -61,8 +61,6 @@ func RegisterRoutes(r *gin.Engine) {
 			batch.PUT("/:id", controllers.Update[models.Batch](db))
 			batch.DELETE("/:id", controllers.Delete[models.Batch](db))
 		}
-
-		// WARNING: Experimental: Using generic controllers User and Lecture
 		user := api.Group("/user")
 		{
 			user.GET("", controllers.All[models.User](db))
@@ -71,13 +69,21 @@ func RegisterRoutes(r *gin.Engine) {
 			user.PUT("/:id", controllers.Update[models.User](db))
 			user.DELETE("/:id", controllers.Delete[models.User](db))
 		}
-		timetable := api.Group("/lecture")
+		lecture := api.Group("/lecture")
 		{
-			timetable.GET("", controllers.All[models.Lecture](db))
-			timetable.POST("", controllers.Create[models.Lecture](db))
-			timetable.GET("/:id", controllers.Get[models.Lecture](db))
-			timetable.PUT("/:id", controllers.Update[models.Lecture](db))
-			timetable.DELETE("/:id", controllers.Delete[models.Lecture](db))
+			lecture.GET("", controllers.FilteredLectures(db))
+			lecture.POST("", controllers.Create[models.Lecture](db))
+			lecture.GET("/:id", controllers.Get[models.Lecture](db))
+			lecture.PUT("/:id", controllers.Update[models.Lecture](db))
+			lecture.DELETE("/:id", controllers.Delete[models.Lecture](db))
+		}
+		session := api.Group("/session")
+		{
+			session.GET("", controllers.All[models.Session](db))
+			session.POST("", controllers.Create[models.Session](db))
+			session.GET("/:id", controllers.Get[models.Session](db))
+			session.PUT("/:id", controllers.Update[models.Session](db))
+			session.DELETE("/:id", controllers.Delete[models.Session](db))
 		}
 	}
 }
