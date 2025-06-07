@@ -85,5 +85,9 @@ func RegisterRoutes(r *gin.Engine) {
 			session.PUT("/:id", controllers.Update[models.Session](db))
 			session.DELETE("/:id", controllers.Delete[models.Session](db))
 		}
+		calendar := api.Group("/calendar")
+		{
+			calendar.GET("/", controllers.GetCalendarSummaryByDate)
+		}
 	}
 }
