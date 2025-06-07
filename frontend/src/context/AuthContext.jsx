@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
       console.log(res.status);
       if (res.status == 200) {
