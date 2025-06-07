@@ -40,10 +40,10 @@ const Dashboard = () => {
         setError(null);
         // Fetch all counts in parallel, including credentials (cookies)
         const responses = await Promise.all([
-          fetch(API_ENDPOINTS.FACULTY_COUNT,/* { credentials: "include" }*/),
-          fetch(API_ENDPOINTS.SUBJECT_COUNT,/* { credentials: "include" }*/),
-          fetch(API_ENDPOINTS.ROOM_COUNT,/* { credentials: "include" }*/),
-          fetch(API_ENDPOINTS.COURSE_COUNT,/* { credentials: "include" }*/)
+          fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
+          fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
         ]);
 
         // Check for errors
@@ -113,7 +113,6 @@ const Dashboard = () => {
       icon: MdGroups,
       iconColor: "bg-emerald-500",
       // bgGradient: "from-emerald-50 to-emerald-100",
-      bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,
