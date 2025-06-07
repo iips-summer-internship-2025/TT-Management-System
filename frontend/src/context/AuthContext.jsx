@@ -2,10 +2,6 @@ import { createContext, useContext, useState, useEffect } from "react";
 import axios from "../services/api.js";
 import { useNavigate } from "react-router-dom";
 import backendService from "../services/backendservice.js";
-import { createContext, useContext, useState, useEffect } from "react";
-import axios from "../services/api.js";
-import { useNavigate } from "react-router-dom";
-import backendService from "../services/backendservice.js";
 
 const AuthContext = createContext();
 
@@ -40,8 +36,8 @@ export const AuthProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
-        credentials: "include"
       });
       // setUser({ username: res.data.username, role: res.data.role });
       // if (res.data.role === "Admin") {
@@ -81,9 +77,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    validateSession();
-  }, []);
+  // useEffect(() => {
+  //   validateSession();
+  // }, []);
 
   return (
     <AuthContext.Provider

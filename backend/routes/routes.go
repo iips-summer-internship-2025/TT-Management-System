@@ -19,7 +19,7 @@ func RegisterRoutes(r *gin.Engine) {
 		api.POST("/login", controllers.Login)
 
 		// INFO: Protected routes
-		// api.Use(middleware.JWTAuthMiddleware())
+		api.Use(middleware.JWTAuthMiddleware())
 		api.POST("/logout", controllers.Logout)
 		course := api.Group("/course")
 		{
