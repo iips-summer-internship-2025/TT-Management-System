@@ -12,7 +12,6 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
-import data from "../assets/academicData.json";
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
@@ -41,10 +40,10 @@ const Dashboard = () => {
         setError(null);
         // Fetch all counts in parallel, including credentials (cookies)
         const responses = await Promise.all([
-          fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
+          fetch(API_ENDPOINTS.FACULTY_COUNT,/* { credentials: "include" }*/),
+          fetch(API_ENDPOINTS.SUBJECT_COUNT,/* { credentials: "include" }*/),
+          fetch(API_ENDPOINTS.ROOM_COUNT,/* { credentials: "include" }*/),
+          fetch(API_ENDPOINTS.COURSE_COUNT,/* { credentials: "include" }*/)
         ]);
 
         // Check for errors
@@ -113,7 +112,7 @@ const Dashboard = () => {
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
-      bgGradient: "from-emerald-50 to-emerald-100",
+      // bgGradient: "from-emerald-50 to-emerald-100",
       bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
@@ -130,6 +129,13 @@ const Dashboard = () => {
       iconColor: "bg-rose-500",
       bgGradient: "from-rose-50 to-rose-100",
     },
+    {
+      heading: loading ? <FaSpinner className="animate-spin" /> : counts.courses,
+      title: "Courses",
+      icon: FaEdit,
+      iconColor: "bg-blue-500",
+      bgGradient: "from-blue-50 to-blue-100"
+    }
   ];
 
   const actionCards = [
