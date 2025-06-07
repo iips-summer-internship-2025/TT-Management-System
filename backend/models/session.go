@@ -4,7 +4,7 @@ import "time"
 
 type Session struct {
 	ID        uint      `gorm:"primaryKey"`
-	LectureID uint      `grom:"notnull"`
-	Date      time.Time `grom:"notnull"`
-	Status    string    `grom:"notnull"`
+	LectureID uint      `grom:"not null"`
+	Date      time.Time `grom:"not null"`
+	Status    string    `grom:"not null"`
 }
