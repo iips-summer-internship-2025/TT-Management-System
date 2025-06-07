@@ -88,7 +88,6 @@ const CreateTable = () => {
     });
   };
 
-
   // Adding debugging to the useEffect to track when it's triggered
   useEffect(() => {
     console.log('useEffect triggered with:', {
@@ -148,7 +147,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -169,7 +169,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -190,7 +191,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -210,7 +212,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -230,7 +233,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -264,7 +268,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -368,7 +373,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       let existingLectures = [];
@@ -481,7 +487,8 @@ const CreateTable = () => {
               BatchID: lecture.BatchID,
               SemesterID: lecture.SemesterID,
               RoomID: lecture.RoomID
-            })
+            }),
+            credentials: 'include'
           })
         );
 
@@ -512,7 +519,8 @@ const CreateTable = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(lecture)
+            body: JSON.stringify(lecture),
+            credentials: 'include'
           })
         );
 
@@ -541,7 +549,8 @@ const CreateTable = () => {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
-            }
+            },
+            credentials: 'include'
           })
         );
 
@@ -702,7 +711,6 @@ const CreateTable = () => {
     return result;
   };
 
-
   const handleClearCell = (day, time) => {
     const key = `${day}-${time}`;
     const newGridData = { ...gridData };
@@ -759,9 +767,6 @@ const CreateTable = () => {
       });
     }
   };
-
-
-
 
   const handleGenerateTimetable = () => {
     if (allDetailsSelected()) {
@@ -891,6 +896,7 @@ const CreateTable = () => {
     setShowTimetable(false);
     setIsLocked(false);
   };
+
   const refresh = () => {
     window.location.reload();
   };
@@ -899,8 +905,6 @@ const CreateTable = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
       <NavBar />
-
-
 
       {error && (
         <div className="flex justify-center items-center py-8">
@@ -941,7 +945,6 @@ const CreateTable = () => {
               </Button>
             </div>
           </div>
-
 
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1021,8 +1024,8 @@ const CreateTable = () => {
             <div className="mt-8">
               <Button
                 className={`w-full h-12 font-semibold rounded-xl shadow-lg transition-all duration-300 ${allDetailsSelected() && !loading
-                    ? "bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white transform hover:scale-[1.02]"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  ? "bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white transform hover:scale-[1.02]"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
                 onClick={handleGenerateTimetable}
                 disabled={!allDetailsSelected() || loading}
@@ -1030,7 +1033,6 @@ const CreateTable = () => {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
                 </svg>
-
                 Generate Timetable Grid
               </Button>
             </div>
@@ -1457,4 +1459,4 @@ const CreateTable = () => {
   );
 }
 
-export default CreateTable
+export default CreateTable;

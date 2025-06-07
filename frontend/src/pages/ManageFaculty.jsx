@@ -28,6 +28,33 @@ const ManageFaculty = () => {
         DELETE_FACULTY: (id) => `${API_BASE_URL}/faculty/${id}`
     };
 
+    // Helper function to get authentication headers
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        return headers;
+    };
+
+    // Helper function to handle authentication errors
+    const handleAuthError = (response) => {
+        if (response.status === 401) {
+            // Clear stored tokens
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            // Redirect to login
+            navigate('/');
+            return true;
+        }
+        return false;
+    };
+
     const fetchFaculties = async () => {
         try {
             setLoading(true);
@@ -35,10 +62,13 @@ const ManageFaculty = () => {
             
             const response = await fetch(API_ENDPOINTS.GET_FACULTIES, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include', // Include cookies if using session-based auth
             });
+
+            if (handleAuthError(response)) {
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -91,11 +121,14 @@ const ManageFaculty = () => {
 
             const response = await fetch(endpoint, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(),
+                credentials: 'include',
                 body: JSON.stringify(facultyData)
             });
+
+            if (handleAuthError(response)) {
+                return;
+            }
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -123,10 +156,13 @@ const ManageFaculty = () => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_FACULTY(id), {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include',
             });
+
+            if (handleAuthError(response)) {
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

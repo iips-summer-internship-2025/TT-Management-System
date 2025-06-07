@@ -41,10 +41,49 @@ const ManageBatches = () => {
     DELETE_BATCH: (id) => `${API_BASE_URL}/batch/${id}`,
   };
 
+  // Helper function to get authentication headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+  };
+
+  // Helper function to handle authentication errors
+  const handleAuthError = (response) => {
+    if (response.status === 401) {
+      // Clear stored tokens
+      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('authToken');
+      // Redirect to login
+      navigate('/');
+      return true;
+    }
+    return false;
+  };
+
   const fetchCourses = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.GET_COURSES);
-      if (!response.ok) throw new Error("Failed to fetch courses");
+      const response = await fetch(API_ENDPOINTS.GET_COURSES, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+      });
+
+      if (handleAuthError(response)) {
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch courses");
+      }
+
       const data = await response.json();
       setCourses(data);
     } catch (err) {
@@ -60,10 +99,15 @@ const ManageBatches = () => {
       const [batchesResponse] = await Promise.all([
         fetch(API_ENDPOINTS.GET_BATCHES, {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: getAuthHeaders(),
+          credentials: 'include',
         }),
         fetchCourses(),
       ]);
+
+      if (handleAuthError(batchesResponse)) {
+        return;
+      }
 
       if (!batchesResponse.ok) {
         throw new Error(`HTTP error! status: ${batchesResponse.status}`);
@@ -131,7 +175,7 @@ const ManageBatches = () => {
     }
 
     try {
-      setAddingBatch(true);
+      editingBatch ? setEditingBatch(true) : setAddingBatch(true);
 
       const batchData = {
         Year: yearNumber, // Convert to number for backend
@@ -139,49 +183,59 @@ const ManageBatches = () => {
         CourseID: Number(newBatch.course_id),
       };
 
-      const isUpdate = !!newBatch.id;
+      const isUpdate = !!newBatch.ID;
       const endpoint = isUpdate
-        ? API_ENDPOINTS.UPDATE_BATCH(newBatch.id)
+        ? API_ENDPOINTS.UPDATE_BATCH(newBatch.ID)
         : API_ENDPOINTS.ADD_BATCH;
       const method = isUpdate ? "PUT" : "POST";
 
+      if (isUpdate) {
+        batchData.ID = newBatch.ID;
+      }
+
       const response = await fetch(endpoint, {
         method: method,
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
+        credentials: 'include',
         body: JSON.stringify(batchData),
       });
 
+      if (handleAuthError(response)) {
+        return;
+      }
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || JSON.stringify(errorData));
+        throw new Error(errorData.error || `Failed to ${isUpdate ? 'update' : 'add'} batch`);
       }
 
       await fetchBatches();
-      setNewBatch({ year: "", section: "", course_id: "" });
+      resetForm();
       setShowAddDialog(false);
     } catch (err) {
-      console.error("Full error:", err);
-      let errorMessage = err.message;
-      alert(
-        `Failed to ${newBatch.id ? "update" : "add"} batch: ${errorMessage}`
-      );
+      console.error(`Error ${editingBatch ? 'updating' : 'adding'} batch:`, err);
+      alert(`Failed to ${newBatch.ID ? "update" : "add"} batch: ${err.message}`);
     } finally {
       setAddingBatch(false);
+      setEditingBatch(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this batch?")) {
+    if (!window.confirm("Are you sure you want to delete this batch? This action cannot be undone.")) {
       return;
     }
 
     try {
       const response = await fetch(API_ENDPOINTS.DELETE_BATCH(id), {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
+        credentials: 'include',
       });
+
+      if (handleAuthError(response)) {
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -195,27 +249,35 @@ const ManageBatches = () => {
     }
   };
 
-  const handleEdit = (id) => {
-    const batchToEdit = batches.find((batch) => batch.id === id);
-    if (batchToEdit) {
-      setNewBatch({
-        id: batchToEdit.id,
-        year: batchToEdit.year.toString(), // Ensure year is string
-        section: batchToEdit.section,
-        course_id: batchToEdit.course_id,
-      });
-      setShowAddDialog(true);
-    }
-  };
-
-  const handleAddNewBatch = () => {
-    setNewBatch({ year: "", section: "", course_id: "" });
+  const handleEdit = (batch) => {
+    setNewBatch({
+      ID: batch.id,
+      year: batch.year.toString(), // Ensure year is string
+      section: batch.section,
+      course_id: batch.course_id,
+    });
+    setEditingBatch(true);
     setShowAddDialog(true);
   };
 
-  const handleCancelAdd = () => {
-    setNewBatch({ year: "", section: "", course_id: "" });
+  const handleAddNewBatch = () => {
+    resetForm();
+    setShowAddDialog(true);
+  };
+
+  const handleCancel = () => {
+    resetForm();
     setShowAddDialog(false);
+  };
+
+  const resetForm = () => {
+    setNewBatch({
+      ID: "",
+      year: "",
+      section: "",
+      course_id: "",
+    });
+    setEditingBatch(false);
   };
 
   const getCoursesDisplay = (batch) => {
@@ -289,7 +351,7 @@ const ManageBatches = () => {
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-slate-800">
-                  Manage Batches
+                  Batch Management
                 </h2>
                 <p className="text-sm text-slate-600">
                   {filteredBatches.length} of {batches.length} batches
@@ -327,7 +389,7 @@ const ManageBatches = () => {
                   <th className="px-6 py-4 text-left font-semibold">Year</th>
                   <th className="px-6 py-4 text-left font-semibold">Section</th>
                   <th className="px-6 py-4 text-left font-semibold">
-                    Course ID
+                    Course
                   </th>
                   <th className="px-6 py-4 text-center font-semibold">
                     Actions
@@ -340,20 +402,26 @@ const ManageBatches = () => {
                     key={`desktop-${batch.id}`}
                     className="hover:bg-blue-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4">{batch.year}</td>
-                    <td className="px-6 py-4">{batch.section}</td>
-                    <td className="px-6 py-4">{getCoursesDisplay(batch)}</td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-slate-800">{batch.year}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-slate-800">{batch.section}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-slate-600">{getCoursesDisplay(batch)}</div>
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center space-x-2">
                         <button
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
-                          onClick={() => handleEdit(batch.id)}
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                          onClick={() => handleEdit(batch)}
                           title="Edit Batch"
                         >
                           <FaEdit className="text-sm" />
                         </button>
                         <button
-                          className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
+                          className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
                           onClick={() => handleDelete(batch.id)}
                           title="Delete Batch"
                         >
@@ -375,39 +443,40 @@ const ManageBatches = () => {
                 className="p-4 hover:bg-slate-50 transition-colors duration-150"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
-                    {batch.id}
-                  </span>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg">
+                      <FaCalendar className="text-white text-sm" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-800">
+                        {batch.year} - Section {batch.section}
+                      </div>
+                      <div className="text-sm text-slate-600">
+                        {getCoursesDisplay(batch)}
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex space-x-2">
                     <button
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
-                      onClick={() => handleEdit(batch.id)}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
+                      onClick={() => handleEdit(batch)}
                     >
                       <FaEdit className="text-sm" />
                     </button>
                     <button
-                      className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
+                      className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
                       onClick={() => handleDelete(batch.id)}
                     >
                       <FaTrash className="text-sm" />
                     </button>
                   </div>
                 </div>
-                <div className="font-medium text-slate-800 mb-1">
-                  Year: {batch.year}
-                </div>
-                <div className="text-sm text-slate-600">
-                  Section: {batch.section}
-                </div>
-                <div className="text-sm text-slate-600">
-                  Course ID: {batch.course_id}
-                </div>
               </div>
             ))}
           </div>
 
           {/* Empty State */}
-          {filteredBatches.length === 0 && (
+          {filteredBatches.length === 0 && !loading && (
             <div className="text-center py-12">
               <FaBook className="mx-auto text-slate-400 text-4xl mb-4" />
               <h3 className="text-lg font-medium text-slate-800 mb-2">
@@ -438,10 +507,10 @@ const ManageBatches = () => {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white flex items-center justify-between p-6 border-b border-slate-200 rounded-t-xl">
               <h3 className="text-lg font-semibold text-slate-800">
-                {newBatch.id ? "Edit Batch" : "Add New Batch"}
+                {editingBatch ? "Edit Batch" : "Add New Batch"}
               </h3>
               <button
-                onClick={handleCancelAdd}
+                onClick={handleCancel}
                 className="text-slate-400 hover:text-slate-600 transition-colors duration-200"
                 disabled={addingBatch}
               >
@@ -464,12 +533,13 @@ const ManageBatches = () => {
                   value={newBatch.year}
                   onChange={(e) => {
                     // Only allow numbers
-                    const value = e.target.value
-                    setNewBatch((prev) => ({ ...prev, year: value }))
+                    const value = e.target.value;
+                    setNewBatch((prev) => ({ ...prev, year: value }));
                   }}
                   placeholder="Enter batch year (e.g., 2023)"
                   disabled={addingBatch}
                   className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                  autoFocus
                 />
               </div>
 
@@ -531,7 +601,7 @@ const ManageBatches = () => {
                 <button
                   onClick={handleSaveNewBatch}
                   disabled={
-                    !newBatch.year ||
+                    !newBatch.year.trim() ||
                     !newBatch.section.trim() ||
                     !newBatch.course_id ||
                     addingBatch
@@ -541,14 +611,14 @@ const ManageBatches = () => {
                   {addingBatch ? (
                     <>
                       <FaSpinner className="animate-spin" />
-                      <span>{newBatch.id ? "Updating..." : "Adding..."}</span>
+                      <span>{editingBatch ? "Updating..." : "Adding..."}</span>
                     </>
                   ) : (
-                    <span>{newBatch.id ? "Update Batch" : "Add Batch"}</span>
+                    <span>{editingBatch ? "Update Batch" : "Add Batch"}</span>
                   )}
                 </button>
                 <button
-                  onClick={handleCancelAdd}
+                  onClick={handleCancel}
                   disabled={addingBatch}
                   className="flex-1 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-50 text-slate-700 py-3 px-4 rounded-lg transition-colors duration-200 font-medium disabled:cursor-not-allowed"
                 >

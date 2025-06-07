@@ -31,6 +31,35 @@ const ManageCourses = () => {
         DELETE_COURSE: (id) => `${API_BASE_URL}/course/${id}`
     };
 
+    // Helper function to get authentication headers
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken') || localStorage.getItem('accessToken');
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        return headers;
+    };
+
+    // Helper function to handle authentication errors
+    const handleAuthError = (error) => {
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+            // Clear any stored tokens
+            localStorage.removeItem('token');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('accessToken');
+            
+            // Redirect to login page
+            navigate('/');
+            return;
+        }
+        throw error;
+    };
+
     const fetchCourses = async () => {
         try {
             setLoading(true);
@@ -38,9 +67,8 @@ const ManageCourses = () => {
             
             const response = await fetch(API_ENDPOINTS.GET_COURSES, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include', // Include cookies if using session-based auth
             });
 
             if (!response.ok) {
@@ -56,7 +84,11 @@ const ManageCourses = () => {
             setFilteredCourses(data);
         } catch (err) {
             console.error('Error fetching courses:', err);
-            setError('Failed to load courses. Please try again.');
+            try {
+                handleAuthError(err);
+            } catch (handledErr) {
+                setError('Failed to load courses. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -71,9 +103,8 @@ const ManageCourses = () => {
             // First, get all courses
             const coursesResponse = await fetch(`${API_BASE_URL}/course`, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include',
             });
 
             if (!coursesResponse.ok) {
@@ -87,11 +118,17 @@ const ManageCourses = () => {
                 coursesData.map(async (course) => {
                     try {
                         // Fetch subjects for this course
-                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`);
+                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`, {
+                            headers: getAuthHeaders(),
+                            credentials: 'include',
+                        });
                         const subjects = subjectsResponse.ok ? await subjectsResponse.json() : [];
                         
                         // Fetch batches for this course
-                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`);
+                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`, {
+                            headers: getAuthHeaders(),
+                            credentials: 'include',
+                        });
                         const batches = batchesResponse.ok ? await batchesResponse.json() : [];
                         
                         return {
@@ -114,7 +151,11 @@ const ManageCourses = () => {
             setFilteredCourses(coursesWithDetails);
         } catch (err) {
             console.error('Error fetching courses:', err);
-            setError('Failed to load courses. Please try again.');
+            try {
+                handleAuthError(err);
+            } catch (handledErr) {
+                setError('Failed to load courses. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -162,9 +203,8 @@ const ManageCourses = () => {
 
             const response = await fetch(endpoint, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(),
+                credentials: 'include',
                 body: JSON.stringify(courseData)
             });
 
@@ -179,7 +219,11 @@ const ManageCourses = () => {
 
         } catch (err) {
             console.error(`Error ${editingCourse ? 'updating' : 'adding'} course:`, err);
-            alert(`Failed to ${editingCourse ? 'update' : 'add'} course: ${err.message}`);
+            try {
+                handleAuthError(err);
+            } catch (handledErr) {
+                alert(`Failed to ${editingCourse ? 'update' : 'add'} course: ${err.message}`);
+            }
         } finally {
             setAddingCourse(false);
             setEditingCourse(false);
@@ -194,9 +238,8 @@ const ManageCourses = () => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_COURSE(id), {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -208,7 +251,11 @@ const ManageCourses = () => {
 
         } catch (err) {
             console.error('Error deleting course:', err);
-            alert(`Failed to delete course: ${err.message}`);
+            try {
+                handleAuthError(err);
+            } catch (handledErr) {
+                alert(`Failed to delete course: ${err.message}`);
+            }
         }
     };
 

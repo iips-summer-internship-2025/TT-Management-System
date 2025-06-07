@@ -31,14 +31,52 @@ const ManageSubjects = () => {
         UPDATE_SUBJECT: (id) => `${API_BASE_URL}/subject/${id}`
     };
 
+    // Helper function to get authentication headers
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        return headers;
+    };
+
+    // Helper function to handle authentication errors
+    const handleAuthError = (error) => {
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+            // Clear any stored tokens
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+            // Redirect to login page
+            navigate('/');
+        }
+    };
+
     const fetchCourses = async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.GET_COURSES);
-            if (!response.ok) throw new Error('Failed to fetch courses');
+            const response = await fetch(API_ENDPOINTS.GET_COURSES, {
+                method: 'GET',
+                headers: getAuthHeaders(),
+                credentials: 'include' // Include cookies if using session-based auth
+            });
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    handleAuthError(new Error('Unauthorized'));
+                    return;
+                }
+                throw new Error('Failed to fetch courses');
+            }
+            
             const data = await response.json();
             setCourses(data);
         } catch (err) {
             console.error('Error fetching courses:', err);
+            handleAuthError(err);
         }
     };
 
@@ -50,12 +88,17 @@ const ManageSubjects = () => {
             const [subjectsResponse] = await Promise.all([
                 fetch(API_ENDPOINTS.GET_SUBJECTS, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: getAuthHeaders(),
+                    credentials: 'include' // Include cookies if using session-based auth
                 }),
                 fetchCourses()
             ]);
 
             if (!subjectsResponse.ok) {
+                if (subjectsResponse.status === 401) {
+                    handleAuthError(new Error('Unauthorized'));
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${subjectsResponse.status}`);
             }
 
@@ -76,6 +119,7 @@ const ManageSubjects = () => {
             setError('Failed to load subjects. Please try again.');
             setSubjects([]);
             setFilteredSubjects([]);
+            handleAuthError(err);
         } finally {
             setLoading(false);
         }
@@ -94,51 +138,58 @@ const ManageSubjects = () => {
         setFilteredSubjects(results);
     }, [searchTerm, subjects]);
 
-const handleSaveNewSubject = async () => {
-    if (!newSubject.name.trim() || !newSubject.code.trim() || !newSubject.course_id) {
-        alert('Please fill in all required fields');
-        return;
-    }
-
-    try {
-        setAddingSubject(true);
-        
-        const subjectData = {
-            name: newSubject.name.trim(),
-            code: newSubject.code.trim().toUpperCase(),
-            CourseID: Number(newSubject.course_id)
-        };
-
-        // Determine if we're updating or creating
-        const isUpdate = !!newSubject.id;
-        const endpoint = isUpdate 
-            ? API_ENDPOINTS.UPDATE_SUBJECT(newSubject.id)
-            : API_ENDPOINTS.ADD_SUBJECT;
-        const method = isUpdate ? 'PUT' : 'POST';
-
-        const response = await fetch(endpoint, {
-            method: method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subjectData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || JSON.stringify(errorData));
+    const handleSaveNewSubject = async () => {
+        if (!newSubject.name.trim() || !newSubject.code.trim() || !newSubject.course_id) {
+            alert('Please fill in all required fields');
+            return;
         }
 
-        await fetchSubjects();
-        setNewSubject({ name: "", code: "", course_code: "", course_id: "" });
-        setShowAddDialog(false);
+        try {
+            setAddingSubject(true);
+            
+            const subjectData = {
+                name: newSubject.name.trim(),
+                code: newSubject.code.trim().toUpperCase(),
+                CourseID: Number(newSubject.course_id)
+            };
 
-    } catch (err) {
-        console.error('Full error:', err);
-        let errorMessage = err.message;
-        alert(`Failed to ${newSubject.id ? 'update' : 'add'} subject: ${errorMessage}`);
-    } finally {
-        setAddingSubject(false);
-    }
-};
+            // Determine if we're updating or creating
+            const isUpdate = !!newSubject.id;
+            const endpoint = isUpdate 
+                ? API_ENDPOINTS.UPDATE_SUBJECT(newSubject.id)
+                : API_ENDPOINTS.ADD_SUBJECT;
+            const method = isUpdate ? 'PUT' : 'POST';
+
+            const response = await fetch(endpoint, {
+                method: method,
+                headers: getAuthHeaders(),
+                credentials: 'include', // Include cookies if using session-based auth
+                body: JSON.stringify(subjectData)
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    handleAuthError(new Error('Unauthorized'));
+                    return;
+                }
+                const errorData = await response.json();
+                throw new Error(errorData.error || JSON.stringify(errorData));
+            }
+
+            await fetchSubjects();
+            setNewSubject({ name: "", code: "", course_code: "", course_id: "" });
+            setShowAddDialog(false);
+
+        } catch (err) {
+            console.error('Full error:', err);
+            let errorMessage = err.message;
+            alert(`Failed to ${newSubject.id ? 'update' : 'add'} subject: ${errorMessage}`);
+            handleAuthError(err);
+        } finally {
+            setAddingSubject(false);
+        }
+    };
+
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this subject?")) {
             return;
@@ -147,12 +198,15 @@ const handleSaveNewSubject = async () => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_SUBJECT(id), {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include' // Include cookies if using session-based auth
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    handleAuthError(new Error('Unauthorized'));
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -162,22 +216,24 @@ const handleSaveNewSubject = async () => {
         } catch (err) {
             console.error('Error deleting subject:', err);
             alert(`Failed to delete subject: ${err.message}`);
+            handleAuthError(err);
         }
     };
 
-const handleEdit = (id) => {
-    const subjectToEdit = subjects.find(subject => subject.id === id);
-    if (subjectToEdit) {
-        setNewSubject({
-            id: subjectToEdit.id,  // Add the id to newSubject state
-            name: subjectToEdit.name,
-            code: subjectToEdit.code,
-            course_code: subjectToEdit.course_code,
-            course_id: subjectToEdit.course_id
-        });
-        setShowAddDialog(true);
-    }
-};
+    const handleEdit = (id) => {
+        const subjectToEdit = subjects.find(subject => subject.id === id);
+        if (subjectToEdit) {
+            setNewSubject({
+                id: subjectToEdit.id,
+                name: subjectToEdit.name,
+                code: subjectToEdit.code,
+                course_code: subjectToEdit.course_code,
+                course_id: subjectToEdit.course_id
+            });
+            setShowAddDialog(true);
+        }
+    };
+
     const handleAddNewSubject = () => {
         setNewSubject({ name: "", code: "", course_code: "", course_id: "" });
         setShowAddDialog(true);

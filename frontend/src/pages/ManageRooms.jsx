@@ -29,6 +29,35 @@ const ManageRooms = () => {
         DELETE_ROOM: (id) => `${API_BASE_URL}/room/${id}`
     };
 
+    // Helper function to get auth headers
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        return headers;
+    };
+
+    // Helper function to handle auth errors
+    const handleAuthError = (response) => {
+        if (response.status === 401) {
+            // Clear stored tokens
+            localStorage.removeItem('token');
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('token');
+            
+            // Redirect to login
+            navigate('/');
+            return true;
+        }
+        return false;
+    };
+
     const fetchRooms = async () => {
         try {
             setLoading(true);
@@ -36,17 +65,20 @@ const ManageRooms = () => {
             
             const response = await fetch(API_ENDPOINTS.GET_ROOMS, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include' // Include cookies if your API uses them
             });
+
+            if (handleAuthError(response)) {
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('API Response:', data);
+            // console.log('API Response:', data);
             setRooms(data);
             setFilteredRooms(data);
         } catch (err) {
@@ -95,11 +127,14 @@ const ManageRooms = () => {
 
             const response = await fetch(endpoint, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(),
+                credentials: 'include',
                 body: JSON.stringify(roomData)
             });
+
+            if (handleAuthError(response)) {
+                return;
+            }
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -127,10 +162,13 @@ const ManageRooms = () => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_ROOM(id), {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: getAuthHeaders(),
+                credentials: 'include'
             });
+
+            if (handleAuthError(response)) {
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
