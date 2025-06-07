@@ -14,14 +14,10 @@ export const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true); // if not needed then remove
-  const [loading, setLoading] = useState(true); // if not needed then remove
   const navigate = useNavigate();
 
   const validateSession = async () => {
     try {
-      const res = await axios.get("/validate-session", {
-        withCredentials: true,
-      });
       const res = await axios.get("/validate-session", {
         withCredentials: true,
       });
