@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        credentials: "include"
       });
       // setUser({ username: res.data.username, role: res.data.role });
       // if (res.data.role === "Admin") {
