@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBuilding, FaSpinner, FaSearch } from "react-icons/fa";
@@ -52,6 +54,7 @@ const ManageRooms = () => {
         } catch (err) {
             console.error('Error fetching rooms:', err);
             setError('Failed to load rooms. Please try again.');
+            toast.error('Failed to load rooms. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -71,7 +74,7 @@ const ManageRooms = () => {
 
     const handleSaveRoom = async () => {
         if (!newRoom.Name.trim() || !newRoom.Capacity) {
-            alert('Please fill in all required fields');
+            toast.error('Please fill in all required fields');
             return;
         }
 
@@ -109,10 +112,13 @@ const ManageRooms = () => {
             await fetchRooms();
             resetForm();
             setShowAddDialog(false);
+            
+            // Show success toast
+            toast.success(`Room ${editingRoom ? 'updated' : 'added'} successfully!`);
 
         } catch (err) {
             console.error(`Error ${editingRoom ? 'updating' : 'adding'} room:`, err);
-            alert(`Failed to ${editingRoom ? 'update' : 'add'} room: ${err.message}`);
+            toast.error(`Failed to ${editingRoom ? 'update' : 'add'} room: ${err.message}`);
         } finally {
             setAddingRoom(false);
             setEditingRoom(false);
@@ -120,10 +126,37 @@ const ManageRooms = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) {
-            return;
-        }
+        // Replace confirm with toast notification
+        toast.info(
+            <div>
+                <p>Are you sure you want to delete this room?</p>
+                <p className="text-sm text-gray-500">This action cannot be undone.</p>
+                <div className="flex justify-end space-x-2 mt-2">
+                    <button 
+                        onClick={() => {
+                            toast.dismiss();
+                            performDelete(id);
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                    >
+                        Delete
+                    </button>
+                    <button 
+                        onClick={() => toast.dismiss()}
+                        className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>,
+            {
+                autoClose: false,
+                closeButton: false,
+            }
+        );
+    };
 
+    const performDelete = async (id) => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_ROOM(id), {
                 method: 'DELETE',
@@ -138,10 +171,13 @@ const ManageRooms = () => {
 
             setRooms(rooms.filter(room => room.ID !== id));
             setFilteredRooms(filteredRooms.filter(room => room.ID !== id));
+            
+            // Show success toast
+            toast.success('Room deleted successfully!');
 
         } catch (err) {
             console.error('Error deleting room:', err);
-            alert(`Failed to delete room: ${err.message}`);
+            toast.error(`Failed to delete room: ${err.message}`);
         }
     };
 
@@ -210,6 +246,18 @@ const ManageRooms = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <NavBar />
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

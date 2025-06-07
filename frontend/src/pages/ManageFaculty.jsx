@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaUserTie, FaSpinner, FaSearch } from "react-icons/fa";
@@ -50,6 +52,7 @@ const ManageFaculty = () => {
         } catch (err) {
             console.error('Error fetching faculties:', err);
             setError('Failed to load faculties. Please try again.');
+            toast.error('Failed to load faculties. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -68,7 +71,7 @@ const ManageFaculty = () => {
 
     const handleSaveFaculty = async () => {
         if (!newFaculty.Name.trim()) {
-            alert('Please enter a faculty name');
+            toast.error('Please enter a faculty name');
             return;
         }
 
@@ -105,10 +108,13 @@ const ManageFaculty = () => {
             await fetchFaculties();
             resetForm();
             setShowAddDialog(false);
+            
+            // Show success toast
+            toast.success(`Faculty ${editingFaculty ? 'updated' : 'added'} successfully!`);
 
         } catch (err) {
             console.error(`Error ${editingFaculty ? 'updating' : 'adding'} faculty:`, err);
-            alert(`Failed to ${editingFaculty ? 'update' : 'add'} faculty: ${err.message}`);
+            toast.error(`Failed to ${editingFaculty ? 'update' : 'add'} faculty: ${err.message}`);
         } finally {
             setAddingFaculty(false);
             setEditingFaculty(false);
@@ -116,10 +122,37 @@ const ManageFaculty = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this faculty? This action cannot be undone.")) {
-            return;
-        }
+        // Replace confirm with toast notification
+        toast.info(
+            <div>
+                <p>Are you sure you want to delete this faculty?</p>
+                <p className="text-sm text-gray-500">This action cannot be undone.</p>
+                <div className="flex justify-end space-x-2 mt-2">
+                    <button 
+                        onClick={() => {
+                            toast.dismiss();
+                            performDelete(id);
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                    >
+                        Yes
+                    </button>
+                    <button 
+                        onClick={() => toast.dismiss()}
+                        className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
+                    >
+                        No
+                    </button>
+                </div>
+            </div>,
+            {
+                autoClose: false,
+                closeButton: false,
+            }
+        );
+    };
 
+    const performDelete = async (id) => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_FACULTY(id), {
                 method: 'DELETE',
@@ -134,10 +167,13 @@ const ManageFaculty = () => {
 
             setFaculties(faculties.filter(faculty => faculty.ID !== id));
             setFilteredFaculties(filteredFaculties.filter(faculty => faculty.ID !== id));
+            
+            // Show success toast
+            toast.success('Faculty deleted successfully!');
 
         } catch (err) {
             console.error('Error deleting faculty:', err);
-            alert(`Failed to delete faculty: ${err.message}`);
+            toast.error(`Failed to delete faculty: ${err.message}`);
         }
     };
 
@@ -204,6 +240,18 @@ const ManageFaculty = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <NavBar />
+            <ToastContainer 
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

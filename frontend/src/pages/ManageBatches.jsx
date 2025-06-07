@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import {
@@ -119,14 +121,14 @@ const ManageBatches = () => {
       !newBatch.section.trim() ||
       !newBatch.course_id
     ) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
     // Validate year is a valid number
     const yearNumber = parseInt(newBatch.year.trim());
     if (isNaN(yearNumber)) {
-      alert("Please enter a valid year (numbers only)");
+      toast.error("Please enter a valid year (numbers only)");
       return;
     }
 
@@ -159,11 +161,32 @@ const ManageBatches = () => {
       await fetchBatches();
       setNewBatch({ year: "", section: "", course_id: "" });
       setShowAddDialog(false);
+      
+      // Show success notification
+      toast.success(
+        `Batch ${isUpdate ? "updated" : "added"} successfully!`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     } catch (err) {
       console.error("Full error:", err);
       let errorMessage = err.message;
-      alert(
-        `Failed to ${newBatch.id ? "update" : "add"} batch: ${errorMessage}`
+      toast.error(
+        `Failed to ${newBatch.id ? "update" : "add"} batch: ${errorMessage}`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
       );
     } finally {
       setAddingBatch(false);
@@ -171,10 +194,39 @@ const ManageBatches = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this batch?")) {
-      return;
-    }
+    // Create a custom confirmation toast
+    toast.info(
+      <div>
+        <p>Are you sure you want to delete this batch?</p>
+        <div className="flex justify-end space-x-2 mt-2">
+          <button
+            onClick={() => {
+              toast.dismiss();
+              performDelete(id);
+            }}
+            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => toast.dismiss()}
+            className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            No
+          </button>
+        </div>
+      </div>,
+      {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+      }
+    );
+  };
 
+  const performDelete = async (id) => {
     try {
       const response = await fetch(API_ENDPOINTS.DELETE_BATCH(id), {
         method: "DELETE",
@@ -189,9 +241,26 @@ const ManageBatches = () => {
 
       setBatches(batches.filter((batch) => batch.id !== id));
       setFilteredBatches(filteredBatches.filter((batch) => batch.id !== id));
+      
+      // Show success notification
+      toast.success("Batch deleted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (err) {
       console.error("Error deleting batch:", err);
-      alert(`Failed to delete batch: ${err.message}`);
+      toast.error(`Failed to delete batch: ${err.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -259,6 +328,7 @@ const ManageBatches = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <NavBar />
+      <ToastContainer />
 
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

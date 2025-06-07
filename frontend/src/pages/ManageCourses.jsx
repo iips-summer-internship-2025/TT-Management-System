@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
@@ -23,9 +25,7 @@ const ManageCourses = () => {
 
     const API_BASE_URL = "http://localhost:8080/api/v1";
     const API_ENDPOINTS = {
-        // Modified to include subjects and batches
         GET_COURSES: `${API_BASE_URL}/course?include=subjects,batches`,
-        // Alternative: GET_COURSES: `${API_BASE_URL}/course/with-details`,
         ADD_COURSE: `${API_BASE_URL}/course`,
         UPDATE_COURSE: (id) => `${API_BASE_URL}/course/${id}`,
         DELETE_COURSE: (id) => `${API_BASE_URL}/course/${id}`
@@ -48,84 +48,26 @@ const ManageCourses = () => {
             }
 
             const data = await response.json();
-            
-            // Debug: Log the response to see the actual structure
-            // console.log('API Response:', data);
-            
             setCourses(data);
             setFilteredCourses(data);
         } catch (err) {
             console.error('Error fetching courses:', err);
             setError('Failed to load courses. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Alternative: Fetch subjects and batches separately
-    const fetchCoursesWithDetails = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            // First, get all courses
-            const coursesResponse = await fetch(`${API_BASE_URL}/course`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+            toast.error('Failed to load courses. Please try again.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
             });
-
-            if (!coursesResponse.ok) {
-                throw new Error(`HTTP error! status: ${coursesResponse.status}`);
-            }
-
-            const coursesData = await coursesResponse.json();
-            
-            // Then, for each course, fetch its subjects and batches
-            const coursesWithDetails = await Promise.all(
-                coursesData.map(async (course) => {
-                    try {
-                        // Fetch subjects for this course
-                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`);
-                        const subjects = subjectsResponse.ok ? await subjectsResponse.json() : [];
-                        
-                        // Fetch batches for this course
-                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`);
-                        const batches = batchesResponse.ok ? await batchesResponse.json() : [];
-                        
-                        return {
-                            ...course,
-                            Subjects: subjects,
-                            Batches: batches
-                        };
-                    } catch (err) {
-                        console.error(`Error fetching details for course ${course.ID}:`, err);
-                        return {
-                            ...course,
-                            Subjects: [],
-                            Batches: []
-                        };
-                    }
-                })
-            );
-            
-            setCourses(coursesWithDetails);
-            setFilteredCourses(coursesWithDetails);
-        } catch (err) {
-            console.error('Error fetching courses:', err);
-            setError('Failed to load courses. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        // Use fetchCourses if your API supports including related data
-        // Use fetchCoursesWithDetails if you need to fetch separately
         fetchCourses();
-        // Uncomment the line below and comment the line above if using separate fetching
-        // fetchCoursesWithDetails();
     }, []);
 
     useEffect(() => {
@@ -138,7 +80,14 @@ const ManageCourses = () => {
 
     const handleSaveCourse = async () => {
         if (!newCourse.name.trim() || !newCourse.code.trim()) {
-            alert('Please fill in all required fields');
+            toast.error('Please fill in all required fields', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
             return;
         }
 
@@ -177,9 +126,25 @@ const ManageCourses = () => {
             resetForm();
             setShowAddDialog(false);
 
+            toast.success(`Course ${editingCourse ? 'updated' : 'added'} successfully!`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+
         } catch (err) {
             console.error(`Error ${editingCourse ? 'updating' : 'adding'} course:`, err);
-            alert(`Failed to ${editingCourse ? 'update' : 'add'} course: ${err.message}`);
+            toast.error(`Failed to ${editingCourse ? 'update' : 'add'} course: ${err.message}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         } finally {
             setAddingCourse(false);
             setEditingCourse(false);
@@ -187,10 +152,38 @@ const ManageCourses = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) {
-            return;
-        }
+        toast.info(
+            <div>
+                <p>Are you sure you want to delete this course? This action cannot be undone.</p>
+                <div className="flex justify-end space-x-2 mt-2">
+                    <button
+                        onClick={() => {
+                            toast.dismiss();
+                            performDelete(id);
+                        }}
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                        Yes
+                    </button>
+                    <button
+                        onClick={() => toast.dismiss()}
+                        className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                    >
+                        NO
+                    </button>
+                </div>
+            </div>,
+            {
+                position: "top-right",
+                autoClose: false,
+                closeOnClick: false,
+                draggable: false,
+                closeButton: false,
+            }
+        );
+    };
 
+    const performDelete = async (id) => {
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_COURSE(id), {
                 method: 'DELETE',
@@ -206,9 +199,25 @@ const ManageCourses = () => {
             setCourses(courses.filter(course => course.ID !== id));
             setFilteredCourses(filteredCourses.filter(course => course.ID !== id));
 
+            toast.success('Course deleted successfully!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+
         } catch (err) {
             console.error('Error deleting course:', err);
-            alert(`Failed to delete course: ${err.message}`);
+            toast.error(`Failed to delete course: ${err.message}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         }
     };
 
@@ -241,7 +250,6 @@ const ManageCourses = () => {
         setEditingCourse(false);
     };
 
-    // Helper function to safely get count
     const getSubjectCount = (course) => {
         if (!course.Subjects) return 0;
         return Array.isArray(course.Subjects) ? course.Subjects.length : 0;
@@ -256,6 +264,7 @@ const ManageCourses = () => {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 <NavBar />
+                <ToastContainer />
                 <div className="flex items-center justify-center h-64">
                     <div className="flex items-center space-x-3">
                         <FaSpinner className="animate-spin text-blue-500 text-2xl" />
@@ -270,6 +279,7 @@ const ManageCourses = () => {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
                 <NavBar />
+                <ToastContainer />
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="text-red-500 text-lg mb-4">{error}</div>
@@ -288,6 +298,7 @@ const ManageCourses = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <NavBar />
+            <ToastContainer />
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

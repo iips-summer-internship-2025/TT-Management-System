@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBook, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManageSubjects = () => {
     const [subjects, setSubjects] = useState([]);
@@ -96,7 +98,7 @@ const ManageSubjects = () => {
 
 const handleSaveNewSubject = async () => {
     if (!newSubject.name.trim() || !newSubject.code.trim() || !newSubject.course_id) {
-        alert('Please fill in all required fields');
+        toast.error('Please fill in all required fields');
         return;
     }
 
@@ -131,39 +133,108 @@ const handleSaveNewSubject = async () => {
         setNewSubject({ name: "", code: "", course_code: "", course_id: "" });
         setShowAddDialog(false);
 
+         // Show success toast
+              toast.success(`Subject ${isUpdate ? "updated" : "added"} successfully!`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
     } catch (err) {
         console.error('Full error:', err);
         let errorMessage = err.message;
-        alert(`Failed to ${newSubject.id ? 'update' : 'add'} subject: ${errorMessage}`);
+        toast.error(`Failed to ${newSubject.id ? 'update' : 'add'} subject: ${errorMessage}`);
     } finally {
         setAddingSubject(false);
     }
 };
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this subject?")) {
-            return;
-        }
+    // const handleDelete = async (id) => {
+    //     if (!window.confirm("Are you sure you want to delete this subject?")) {
+    //         return;
+    //     }
 
+    //     try {
+    //         const response = await fetch(API_ENDPOINTS.DELETE_SUBJECT(id), {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             }
+    //         });
+
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! status: ${response.status}`);
+    //         }
+
+    //         setSubjects(subjects.filter(subject => subject.id !== id));
+    //         setFilteredSubjects(filteredSubjects.filter(subject => subject.id !== id));
+
+    //     } catch (err) {
+    //         console.error('Error deleting subject:', err);
+    //         alert(`Failed to delete subject: ${err.message}`);
+    //     }
+    // };
+
+    const handleDelete = async(id) => {
+        toast.info(
+          <div>
+            <div className="text-lg font-medium mb-4">
+              Are you sure you want to delete this subject?
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
+                onClick={() => {
+                  toast.dismiss();
+                  performDelete(id);
+                }}
+              >
+                Yes
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                onClick={() => toast.dismiss()}
+              >
+                No
+              </button>
+            </div>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: false,
+            closeButton: false,
+            draggable: false,
+            closeOnClick: false,
+          }
+        );
+      };
+    
+      const performDelete = async (id) => {
         try {
-            const response = await fetch(API_ENDPOINTS.DELETE_SUBJECT(id), {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            setSubjects(subjects.filter(subject => subject.id !== id));
-            setFilteredSubjects(filteredSubjects.filter(subject => subject.id !== id));
-
+          const response = await fetch(API_ENDPOINTS.DELETE_SUBJECT(id), {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+    
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+    
+          setSubjects(subjects.filter((subject) => subject.id !== id));
+          setFilteredSubjects(
+            filteredSubjects.filter((subject) => subject.id !== id)
+          );
+    
+          // Show success toast
+          toast.success("Subject deleted successfully!");
         } catch (err) {
-            console.error('Error deleting subject:', err);
-            alert(`Failed to delete subject: ${err.message}`);
+          console.error("Error deleting subject:", err);
+          toast.error(`Failed to delete subject: ${err.message}`);
         }
-    };
+      };
 
 const handleEdit = (id) => {
     const subjectToEdit = subjects.find(subject => subject.id === id);
@@ -229,6 +300,7 @@ const handleEdit = (id) => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <NavBar />
+            <ToastContainer />
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
