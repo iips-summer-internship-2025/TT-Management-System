@@ -113,6 +113,7 @@ const Dashboard = () => {
       icon: MdGroups,
       iconColor: "bg-emerald-500",
       // bgGradient: "from-emerald-50 to-emerald-100",
+      bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,

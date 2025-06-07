@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, X, Check, AlertTriangle, Users, BookOpen, Clock, MapPin } from 'lucide-react';
 import academicData from "../assets/academicData.json";
+import NavBar from "../components/NavBar";
 
 function ViewTimeTable() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -253,7 +254,8 @@ function ViewTimeTable() {
   const selectedDateClasses = selectedDate ? getFilteredClasses(getClassesForDate(selectedDate)) : [];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
+      <NavBar/>
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
