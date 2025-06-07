@@ -19,7 +19,7 @@ func RegisterRoutes(r *gin.Engine) {
 		api.POST("/login", controllers.Login)
 
 		// INFO: Protected routes
-		// api.Use(middleware.JWTAuthMiddleware())
+		api.Use(middleware.JWTAuthMiddleware())
 		api.POST("/logout", controllers.Logout)
 		course := api.Group("/course")
 		{
@@ -84,6 +84,10 @@ func RegisterRoutes(r *gin.Engine) {
 			session.GET("/:id", controllers.Get[models.Session](db))
 			session.PUT("/:id", controllers.Update[models.Session](db))
 			session.DELETE("/:id", controllers.Delete[models.Session](db))
+		}
+		calendar := api.Group("/calendar")
+		{
+			calendar.GET("/", controllers.GetCalendarSummaryByDate)
 		}
 	}
 }
