@@ -12,7 +12,6 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
-import data from "../assets/academicData.json";
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
@@ -113,8 +112,7 @@ const Dashboard = () => {
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
-      bgGradient: "from-emerald-50 to-emerald-100",
-      bgGradient: "from-emerald-50 to-emerald-100",
+      // bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,
@@ -130,6 +128,13 @@ const Dashboard = () => {
       iconColor: "bg-rose-500",
       bgGradient: "from-rose-50 to-rose-100",
     },
+    {
+      heading: loading ? <FaSpinner className="animate-spin" /> : counts.courses,
+      title: "Courses",
+      icon: FaEdit,
+      iconColor: "bg-blue-500",
+      bgGradient: "from-blue-50 to-blue-100"
+    }
   ];
 
   const actionCards = [
