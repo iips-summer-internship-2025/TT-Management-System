@@ -24,7 +24,29 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set("username", claims.Subject)
+		c.Set("role", claims.Role)
 		c.Next()
+	}
+}
+
+func RequireRoles(roles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, exists := c.Get("role")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Role not found in token"})
+			c.Abort()
+			return
+		}
+
+		for _, role := range roles {
+			if role == userRole.(string) {
+				c.Next()
+				return
+			}
+		}
+
+		c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		c.Abort()
 	}
 }
 

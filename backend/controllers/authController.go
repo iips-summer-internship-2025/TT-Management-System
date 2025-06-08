@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"tms-server/models"
 	"tms-server/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Ping(c *gin.Context) {
@@ -24,7 +25,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.Username)
+	token, err := utils.GenerateToken(user.Username, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return

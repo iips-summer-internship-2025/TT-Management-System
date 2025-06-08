@@ -8,26 +8,34 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(username string) (string, error) {
+type Claims struct {
+	Role string `json:"role"`
+	jwt.RegisteredClaims
+}
+
+func GenerateToken(username string, role string) (string, error) {
 	const tokenExpiry = 24 * 7 * time.Hour
-	claims := &jwt.RegisteredClaims{
-		Subject:   username,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpiry)),
+	claims := &Claims{
+		Role: role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   username,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpiry)),
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("APP_JWT_SECRET")))
 }
 
-func ValidateToken(tokenString string) (*jwt.RegisteredClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (any, error) {
+func ValidateToken(tokenString string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(os.Getenv("APP_JWT_SECRET")), nil
 	})
 	if err != nil || !token.Valid {
 		return nil, errors.New("invalid token")
 	}
 
-	if claims, ok := token.Claims.(*jwt.RegisteredClaims); ok {
+	if claims, ok := token.Claims.(*Claims); ok {
 		return claims, nil
 	}
 
