@@ -18,6 +18,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [counts, setCounts] = useState({
     faculties: 0,
     subjects: 0,
@@ -33,77 +34,127 @@ const Dashboard = () => {
     COURSE_COUNT: `${API_BASE_URL}/course`
   };
 
+  // Function To Check Authentication
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.FACULTY_COUNT, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        console.log('Authentication failed - no valid cookie');
+        navigate('/');
+        return false;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return true;
+
+    } catch (error) {
+      console.error('Authentication check failed:', error);
+      navigate('/');
+      return false;
+    }
+  };
+
   useEffect(() => {
-    const fetchCounts = async () => {
+    const initializeDashboard = async () => {
       try {
         setLoading(true);
-        setError(null);
-        // Fetch all counts in parallel, including credentials (cookies)
-        const responses = await Promise.all([
-          fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
-        ]);
-
-        // Check for errors
-        for (const response of responses) {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+        
+        // Check authentication first
+        const isAuth = await checkAuthentication();
+        
+        if (!isAuth) {
+          return; // Exit early if not authenticated
         }
 
-        // Parse all responses
-        const [facultyData, subjectData, roomData, courseData] = await Promise.all([
-          responses[0].json(),
-          responses[1].json(),
-          responses[2].json(),
-          responses[3].json()
-        ]);
-
-        // console.log('Fetched data:', { facultyData, subjectData, roomData, courseData });
-
-        // Handle both array responses and object responses with count property
-        const getCount = (data) => {
-          if (Array.isArray(data)) {
-            return data.length;
-          } else if (data && typeof data === 'object') {
-            return data.count || data.total || data.length || 0;
-          }
-          return 0;
-        };
-
-        setCounts({
-          faculties: getCount(facultyData),
-          subjects: getCount(subjectData),
-          rooms: getCount(roomData),
-          courses: getCount(courseData)
-        });
-
-        // console.log("Final counts:", {
-        //   faculties: getCount(facultyData),
-        //   subjects: getCount(subjectData), 
-        //   rooms: getCount(roomData),
-        //   courses: getCount(courseData)
-        // });
-
-      } catch (err) {
-        console.error('Error fetching counts:', err);
-        setError('Failed to load dashboard data. Please check your connection and try again.');
-        // Set default values on error
-        setCounts({
-          faculties: 0,
-          subjects: 0,
-          rooms: 0,
-          courses: 0
-        });
-      } finally {
-        setLoading(false);
+        setIsAuthenticated(true);
+        
+        // Proceed with fetching dashboard data
+        await fetchCounts();
+        
+      } catch (error) {
+        console.error('Dashboard initialization failed:', error);
+        setError('Failed to initialize dashboard. Please try again.');
+        navigate('/');
       }
     };
 
-    fetchCounts();
-  }, []);
+    initializeDashboard();
+  }, [navigate]);
+
+  const fetchCounts = async () => {
+    try {
+      setError(null);
+      
+      // Fetch all counts in parallel, including credentials (cookies)
+      const responses = await Promise.all([
+        fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
+        fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
+        fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
+        fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
+      ]);
+
+      // Check for authentication errors in responses
+      for (const response of responses) {
+        if (response.status === 401 || response.status === 403) {
+          console.log('Authentication failed during data fetch, redirecting to login');
+          navigate('/');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      }
+
+      // Parse all responses
+      const [facultyData, subjectData, roomData, courseData] = await Promise.all([
+        responses[0].json(),
+        responses[1].json(),
+        responses[2].json(),
+        responses[3].json()
+      ]);
+
+      // Handle both array responses and object responses with count property
+      const getCount = (data) => {
+        if (Array.isArray(data)) {
+          return data.length;
+        } else if (data && typeof data === 'object') {
+          return data.count || data.total || data.length || 0;
+        }
+        return 0;
+      };
+
+      setCounts({
+        faculties: getCount(facultyData),
+        subjects: getCount(subjectData),
+        rooms: getCount(roomData),
+        courses: getCount(courseData)
+      });
+
+    } catch (err) {
+      console.error('Error fetching counts:', err);
+      setError('Failed to load dashboard data. Please check your connection and try again.');
+      // Set default values on error
+      setCounts({
+        faculties: 0,
+        subjects: 0,
+        rooms: 0,
+        courses: 0
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const { logout } = useAuth();
 
   const statsCards = [
@@ -112,7 +163,6 @@ const Dashboard = () => {
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
-      // bgGradient: "from-emerald-50 to-emerald-100",
       bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
@@ -190,7 +240,7 @@ const Dashboard = () => {
     {
       title: "Manage Batches",
       description: "Organize batch details and schedules",
-      icon: FaLayerGroup, // A good icon to represent batches
+      icon: FaLayerGroup,
       iconColor: "bg-green-500",
       hoverColor: "hover:bg-green-50",
       route: "/manage-batches",
@@ -201,10 +251,25 @@ const Dashboard = () => {
     window.location.reload();
   };
 
+  // Loading Spinner
+  if (loading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="animate-spin w-8 h-8 text-blue-500 mx-auto mb-4" />
+          <p className="text-slate-600">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // This Will prevents flash of content befre redirect
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <NavBar onLogout={logout} />
-      {/* <NavBar  /> */}
 
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
