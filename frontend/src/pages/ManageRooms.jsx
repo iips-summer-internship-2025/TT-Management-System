@@ -38,7 +38,8 @@ const ManageRooms = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include cookies for session management
             });
 
             if (!response.ok) {
@@ -98,6 +99,7 @@ const ManageRooms = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include cookies for session management
                 body: JSON.stringify(roomData)
             });
 
@@ -129,7 +131,8 @@ const ManageRooms = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include cookies for session management
             });
 
             if (!response.ok) {

@@ -33,7 +33,11 @@ const ManageSubjects = () => {
 
     const fetchCourses = async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.GET_COURSES);
+            const response = await fetch(API_ENDPOINTS.GET_COURSES, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
             if (!response.ok) throw new Error('Failed to fetch courses');
             const data = await response.json();
             setCourses(data);
@@ -50,7 +54,8 @@ const ManageSubjects = () => {
             const [subjectsResponse] = await Promise.all([
                 fetch(API_ENDPOINTS.GET_SUBJECTS, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
                 }),
                 fetchCourses()
             ]);
@@ -119,6 +124,7 @@ const handleSaveNewSubject = async () => {
         const response = await fetch(endpoint, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(subjectData)
         });
 
@@ -149,7 +155,8 @@ const handleSaveNewSubject = async () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) {

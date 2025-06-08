@@ -37,7 +37,8 @@ const ManageFaculty = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include cookies for session management
             });
 
             if (!response.ok) {
@@ -94,6 +95,7 @@ const ManageFaculty = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include cookies for session management
                 body: JSON.stringify(facultyData)
             });
 
@@ -125,7 +127,8 @@ const ManageFaculty = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include cookies for session management
             });
 
             if (!response.ok) {

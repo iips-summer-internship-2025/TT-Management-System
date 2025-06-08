@@ -148,7 +148,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       if (!response.ok) {
@@ -169,7 +170,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       if (!response.ok) {
@@ -190,7 +192,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       if (!response.ok) {
@@ -210,7 +213,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       if (!response.ok) {
@@ -230,7 +234,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       if (!response.ok) {
@@ -264,7 +269,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       if (response.ok) {
@@ -368,7 +374,8 @@ const CreateTable = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include' // Include credentials for CORS requests
       });
 
       let existingLectures = [];
@@ -512,6 +519,7 @@ const CreateTable = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include', // Include credentials for CORS requests
             body: JSON.stringify(lecture)
           })
         );

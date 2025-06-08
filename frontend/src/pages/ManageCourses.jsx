@@ -40,7 +40,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -73,7 +74,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!coursesResponse.ok) {
@@ -87,11 +89,15 @@ const ManageCourses = () => {
                 coursesData.map(async (course) => {
                     try {
                         // Fetch subjects for this course
-                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`);
+                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`, {
+                            credentials: 'include'
+                        });
                         const subjects = subjectsResponse.ok ? await subjectsResponse.json() : [];
                         
                         // Fetch batches for this course
-                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`);
+                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`, {
+                            credentials: 'include'
+                        });
                         const batches = batchesResponse.ok ? await batchesResponse.json() : [];
                         
                         return {
@@ -165,6 +171,7 @@ const ManageCourses = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include credentials for CORS
                 body: JSON.stringify(courseData)
             });
 
@@ -196,7 +203,8 @@ const ManageCourses = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
