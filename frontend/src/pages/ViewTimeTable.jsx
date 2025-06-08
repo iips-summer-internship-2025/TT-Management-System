@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, X, Check, AlertTriangle, Users, BookOpen, Clock, MapPin } from 'lucide-react';
 import academicData from "../assets/academicData.json";
 import NavBar from "../components/NavBar";
+import { useAuth } from '../context/AuthContext';
 
 function ViewTimeTable() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -202,6 +203,8 @@ function ViewTimeTable() {
     return 'partial';
   };
 
+  const { logout } = useAuth();
+
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setShowModal(true);
@@ -255,7 +258,7 @@ function ViewTimeTable() {
 
   return (
     <div className="min-h-screen">
-      <NavBar/>
+      <NavBar onLogout={logout}/>
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex flex-col lg:flex-row gap-6 mb-6">

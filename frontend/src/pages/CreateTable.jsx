@@ -20,6 +20,7 @@ import {
 import { Plus, Edit, Trash2, Save, RefreshCw, Trash } from "lucide-react";
 import NavBar from "../components/NavBar";
 import academicData from "../assets/academicData.json";
+import { useAuth } from '../context/AuthContext';
 
 const CreateTable = () => {
   const [gridData, setGridData] = useState({});
@@ -38,6 +39,7 @@ const CreateTable = () => {
   const [newTimeSlot, setNewTimeSlot] = useState("");
   const [editTimeSlotDialog, setEditTimeSlotDialog] = useState(false);
   const [editingTimeSlot, setEditingTimeSlot] = useState({ index: -1, value: "" });
+  const { logout } = useAuth();
 
   // New state variables for timetable management
   const [timetableState, setTimetableState] = useState({
@@ -906,10 +908,7 @@ const CreateTable = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <NavBar />
-
-
-
+      <NavBar onLogout={logout}/>
       {error && (
         <div className="flex justify-center items-center py-8">
           <div className="bg-white rounded-xl shadow-lg p-6 text-center max-w-md mx-4">
