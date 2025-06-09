@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaUserTie, FaSpinner, FaSearch } from "react-icons/fa";
+import { useAuth } from '../context/AuthContext';
 
 const ManageFaculty = () => {
     const [faculties, setFaculties] = useState([]);
@@ -32,7 +33,7 @@ const ManageFaculty = () => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const response = await fetch(API_ENDPOINTS.GET_FACULTIES, {
                 method: 'GET',
                 headers: {
@@ -76,7 +77,7 @@ const ManageFaculty = () => {
         try {
             editingFaculty ? setEditingFaculty(true) : setAddingFaculty(true);
 
-            const endpoint = editingFaculty 
+            const endpoint = editingFaculty
                 ? API_ENDPOINTS.UPDATE_FACULTY(newFaculty.ID)
                 : API_ENDPOINTS.ADD_FACULTY;
 
@@ -116,6 +117,7 @@ const ManageFaculty = () => {
             setEditingFaculty(false);
         }
     };
+    const { logout } = useAuth();
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this faculty? This action cannot be undone.")) {
@@ -206,7 +208,7 @@ const ManageFaculty = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar />
+            <NavBar onLogout={logout} />
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
@@ -278,7 +280,7 @@ const ManageFaculty = () => {
                                     <tr
                                         key={`desktop-${faculty.ID}`}
                                         className="hover:bg-blue-50 transition-colors duration-150"
-                                    >                                        
+                                    >
                                         <td className="px-6 py-4">
                                             <div className="font-medium text-slate-800">{faculty.Name}</div>
                                         </td>

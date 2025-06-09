@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
+import { useAuth } from '../context/AuthContext';
 
 const ManageCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -62,6 +63,8 @@ const ManageCourses = () => {
             setLoading(false);
         }
     };
+
+      const { logout } = useAuth();
 
     // Alternative: Fetch subjects and batches separately
     const fetchCoursesWithDetails = async () => {
@@ -295,7 +298,7 @@ const ManageCourses = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar />
+            <NavBar onLogout={logout}/>
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

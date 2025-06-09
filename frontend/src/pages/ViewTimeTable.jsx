@@ -12,6 +12,8 @@ import {
   MapPin,
 } from "lucide-react";
 import academicData from "../assets/academicData.json";
+import NavBar from "../components/NavBar";
+import { useAuth } from '../context/AuthContext';
 
 function ViewTimeTable() {
   const [currentDate, setCurrentDate] = useState(new Date());
