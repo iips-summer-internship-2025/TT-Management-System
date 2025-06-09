@@ -91,7 +91,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="//manage-faculty"
+        path="/manage-faculty"
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <ManageFaculty/>
