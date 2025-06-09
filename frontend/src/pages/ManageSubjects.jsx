@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBook, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
-import { useAuth } from '../context/AuthContext';
 
 const ManageSubjects = () => {
     const [subjects, setSubjects] = useState([]);
@@ -86,7 +84,6 @@ const ManageSubjects = () => {
             setLoading(false);
         }
     };
-    const { logout } = useAuth();
 
     useEffect(() => {
         fetchSubjects();
@@ -205,7 +202,6 @@ const handleEdit = (id) => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="flex items-center space-x-3">
                         <FaSpinner className="animate-spin text-blue-500 text-2xl" />
@@ -219,7 +215,6 @@ const handleEdit = (id) => {
     if (error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="text-red-500 text-lg mb-4">{error}</div>
@@ -237,8 +232,6 @@ const handleEdit = (id) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar onLogout={logout}/>
-
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
