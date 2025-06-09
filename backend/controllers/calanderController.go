@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 	"tms-server/config"
 	"tms-server/models"
@@ -14,6 +15,22 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 	semester := c.Query("semester")
 	courseID := c.Query("course_id")
 	facultyID := c.Query("faculty_id")
+
+	if month == "" || year == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Both 'month' and 'year' query parameters are required.",
+		})
+		return
+	}
+
+	if _, err := strconv.Atoi(month); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'month' parameter. Must be a number."})
+		return
+	}
+	if _, err := strconv.Atoi(year); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'year' parameter. Must be a number."})
+		return
+	}
 
 	query := config.DB.Model(&models.Session{}).
 		Joins("JOIN lectures ON lectures.id = sessions.lecture_id").
@@ -35,6 +52,11 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 	err := query.Preload("Lecture").Find(&sessions).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetching sessions"})
+		return
+	}
+
+	if len(sessions) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "no sessions found", "data": []gin.H{}})
 		return
 	}
 
@@ -109,7 +131,7 @@ func GetLectureDetailsByDate(c *gin.Context) {
 		Preload("Faculty").
 		Preload("Room").
 		Preload("Batch.Course").
-		Where("id IN ?", lectureIDs)
+		Where("lectures.id IN ?", lectureIDs)
 
 	// Optional Filters (faculty_id, course_id, semester)
 	if semester != "" {
@@ -127,6 +149,11 @@ func GetLectureDetailsByDate(c *gin.Context) {
 	var lectures []models.Lecture
 	if err := lectureQuery.Find(&lectures).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch lecture details"})
+		return
+	}
+
+	if len(lectures) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "no lectures found", "data": []gin.H{}})
 		return
 	}
 
