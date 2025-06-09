@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
@@ -12,7 +11,6 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
-import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -155,8 +153,6 @@ const Dashboard = () => {
     }
   };
 
-  const { logout } = useAuth();
-
   const statsCards = [
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.faculties,
@@ -269,8 +265,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <NavBar onLogout={logout} />
-
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
         <Heading text="Admin Dashboard" />
