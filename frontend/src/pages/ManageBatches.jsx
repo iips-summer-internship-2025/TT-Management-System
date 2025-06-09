@@ -12,6 +12,7 @@ import {
   FaSearch,
   FaBook,
 } from "react-icons/fa";
+import { useAuth } from '../context/AuthContext';
 
 const ManageBatches = () => {
   const [batches, setBatches] = useState([]);
@@ -43,7 +44,9 @@ const ManageBatches = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.GET_COURSES);
+      const response = await fetch(API_ENDPOINTS.GET_COURSES, {
+        credentials: "include",
+      });
       if (!response.ok) throw new Error("Failed to fetch courses");
       const data = await response.json();
       setCourses(data);
@@ -51,7 +54,8 @@ const ManageBatches = () => {
       console.error("Error fetching courses:", err);
     }
   };
-
+  
+  const { logout } = useAuth();
   const fetchBatches = async () => {
     try {
       setLoading(true);
@@ -61,6 +65,7 @@ const ManageBatches = () => {
         fetch(API_ENDPOINTS.GET_BATCHES, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
         }),
         fetchCourses(),
       ]);
@@ -148,6 +153,7 @@ const ManageBatches = () => {
       const response = await fetch(endpoint, {
         method: method,
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(batchData),
       });
 
@@ -181,7 +187,9 @@ const ManageBatches = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
+      
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -226,7 +234,7 @@ const ManageBatches = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <NavBar />
+        <NavBar/>
         <div className="flex items-center justify-center h-64">
           <div className="flex items-center space-x-3">
             <FaSpinner className="animate-spin text-blue-500 text-2xl" />
@@ -258,7 +266,7 @@ const ManageBatches = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <NavBar />
+      <NavBar onLogout={logout} />
 
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

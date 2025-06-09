@@ -9,7 +9,7 @@ type Lecture struct {
 	SubjectID uint
 	FacultyID uint
 	BatchID   uint
-	SemesterID   uint
+	Semester  uint
 	RoomID    uint
 
 	Subject Subject

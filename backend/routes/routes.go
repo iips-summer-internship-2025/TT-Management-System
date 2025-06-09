@@ -87,7 +87,8 @@ func RegisterRoutes(r *gin.Engine) {
 		}
 		calendar := api.Group("/calendar")
 		{
-			calendar.GET("/", controllers.GetCalendarSummaryByDate)
+			calendar.GET("", controllers.GetCalendarSummaryByMonth)
+			calendar.GET("/day", controllers.GetLectureDetailsByDate)
 		}
 	}
 }

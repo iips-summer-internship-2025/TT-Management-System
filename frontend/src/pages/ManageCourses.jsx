@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
+import { useAuth } from '../context/AuthContext';
 
 const ManageCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -40,7 +41,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -62,6 +64,8 @@ const ManageCourses = () => {
         }
     };
 
+      const { logout } = useAuth();
+
     // Alternative: Fetch subjects and batches separately
     const fetchCoursesWithDetails = async () => {
         try {
@@ -73,7 +77,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!coursesResponse.ok) {
@@ -87,11 +92,15 @@ const ManageCourses = () => {
                 coursesData.map(async (course) => {
                     try {
                         // Fetch subjects for this course
-                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`);
+                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`, {
+                            credentials: 'include'
+                        });
                         const subjects = subjectsResponse.ok ? await subjectsResponse.json() : [];
                         
                         // Fetch batches for this course
-                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`);
+                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`, {
+                            credentials: 'include'
+                        });
                         const batches = batchesResponse.ok ? await batchesResponse.json() : [];
                         
                         return {
@@ -165,6 +174,7 @@ const ManageCourses = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include credentials for CORS
                 body: JSON.stringify(courseData)
             });
 
@@ -196,7 +206,8 @@ const ManageCourses = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -287,7 +298,7 @@ const ManageCourses = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar />
+            <NavBar onLogout={logout}/>
 
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
