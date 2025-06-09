@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react'; 
 import { ChevronLeft, ChevronRight, Calendar, X, Check, AlertTriangle, Users, BookOpen, Clock, MapPin } from 'lucide-react';
 import academicData from "../assets/academicData.json";
-import NavBar from "../components/NavBar";
 
 function ViewTimeTable() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -9,12 +8,13 @@ function ViewTimeTable() {
   const [selectedCourse, setSelectedCourse] = useState('all');
   const [selectedFaculty, setSelectedFaculty] = useState('all');
   const [selectedSemester, setSelectedSemester] = useState('all');
-  // const [attendanceData, setAttendanceData] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showAttendance, setShowAttendance] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState(false);
+   //use that useState variable attendanceData to store the response which comes from below api  
+  //GET /api/v1/calendar?course_id={courseId}&semester={semesterId}&month={month}&year={year}&faculty_id={facultyId}
+  // const [attendanceData, setAttendanceData] = useState(null);
   const modalRef = useRef(null);
 
-  // Sample attendance data
   const attendanceData = {
     data: [
         {
@@ -120,12 +120,10 @@ function ViewTimeTable() {
 
     const days = [];
     
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
     
-    // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
@@ -139,48 +137,19 @@ function ViewTimeTable() {
 
   const getClassesForDate = (date) => {
     const dateKey = formatDateKey(date);
-    return attendanceData[dateKey] || [];
-  };
-
-  // Helper to get attendance data for a date
-  const getAttendanceForDate = (date) => {
-    const dateKey = formatDateKey(date);
-    return attendanceData.data.find(item => item.date === dateKey) || {
-      total_held: 0,
-      total_cancelled: 0,
-      no_data: 0
+    const dateData = attendanceData.data.find(item => item.date === dateKey);
+    
+    if (!dateData) return { total_held: 0, total_cancelled: 0, no_data: 0 };
+    
+    return {
+      total_held: dateData.total_held,
+      total_cancelled: dateData.total_cancelled,
+      no_data: dateData.no_data
     };
   };
 
-  const getFilteredClasses = (classes) => {
-    let filtered = [...classes];
-
-    if (selectedCourse !== 'all') {
-      filtered = filtered.filter(cls => cls.courseId === selectedCourse);
-    }
-
-    if (selectedFaculty !== 'all') {
-      filtered = filtered.filter(cls => cls.facultyId === selectedFaculty);
-    }
-
-    if (selectedSemester !== 'all') {
-      filtered = filtered.filter(cls => cls.semester === selectedSemester);
-    }
-
-    return filtered;
-  };
-
-  const getAttendanceStatus = (date) => {
-    const classes = getFilteredClasses(getClassesForDate(date));
-    
-    if (classes.length === 0) return 'no-data';
-    
-    const takenCount = classes.filter(cls => cls.taken).length;
-    const totalCount = classes.length;
-    
-    if (takenCount === totalCount) return 'all-present';
-    if (takenCount === 0) return 'all-absent';
-    return 'partial';
+  const handleApplyFilters = () => {
+    setAppliedFilters(true);
   };
 
   const handleDateClick = (date) => {
@@ -201,7 +170,6 @@ function ViewTimeTable() {
     setSelectedDate(null);
   };
 
-  // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -218,13 +186,6 @@ function ViewTimeTable() {
     };
   }, [showModal]);
 
-  // Helper functions to get data by ID
-  const getFacultyById = (id) => academicData.faculties.find(f => f.id === id);
-  const getSubjectById = (id) => academicData.subjects.find(s => s.id === id);
-  const getCourseById = (id) => academicData.courses.find(c => c.id === id);
-  const getRoomById = (id) => academicData.rooms.find(r => r.id === id);
-  const getSemesterById = (id) => academicData.semesters.find(s => s.id === id);
-
   const days = getDaysInMonth(currentDate);
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -232,11 +193,8 @@ function ViewTimeTable() {
   ];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const selectedDateClasses = selectedDate ? getFilteredClasses(getClassesForDate(selectedDate)) : [];
-
   return (
-    <div className="min-h-screen">
-      <NavBar/>
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex flex-col lg:flex-row gap-6 mb-6">
@@ -288,17 +246,12 @@ function ViewTimeTable() {
                 </select>
               </div>
 
-              <div className="flex flex-col">
-                <label className="text-sm font-medium text-gray-600 mb-1">Attendance</label>
+              <div className="flex flex-col justify-end">
                 <button
-                  onClick={() => setShowAttendance(!showAttendance)}
-                  className={`px-3 py-2 border rounded-md transition-colors ${
-                    showAttendance
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  }`}
+                  onClick={handleApplyFilters}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  {showAttendance ? 'Hide Attendance' : 'Show Attendance'}
+                  Apply
                 </button>
               </div>
             </div>
@@ -332,10 +285,6 @@ function ViewTimeTable() {
               <span className="text-sm text-gray-600">Classes Taken</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span className="text-sm text-gray-600">Partial Attendance</span>
-            </div>
-            <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-red-500 rounded"></div>
               <span className="text-sm text-gray-600">Classes Missed</span>
             </div>
@@ -360,27 +309,27 @@ function ViewTimeTable() {
                 return <div key={index} className="p-3 h-16"></div>;
               }
               
-              const status = getAttendanceStatus(day);
+              const classesData = getClassesForDate(day);
               const isToday = day.toDateString() === new Date().toDateString();
-              const classCount = getFilteredClasses(getClassesForDate(day)).length;
-              const attendanceForDate = getAttendanceForDate(day);
               
               let bgColor = 'bg-white hover:bg-gray-50';
               let indicator = '';
+              let statusText = '';
               
-              switch (status) {
-                case 'all-present':
+              if (classesData.total_held > 0 || classesData.total_cancelled > 0) {
+                if (classesData.total_cancelled === 0) {
                   indicator = 'bg-green-500';
-                  break;
-                case 'partial':
-                  indicator = 'bg-yellow-500';
-                  break;
-                case 'all-absent':
+                  statusText = ${classesData.total_held} held;
+                } else if (classesData.total_held === 0) {
                   indicator = 'bg-red-500';
-                  break;
-                case 'no-data':
-                  indicator = 'bg-gray-300';
-                  break;
+                  statusText = ${classesData.total_cancelled} missed;
+                } else {
+                  indicator = 'bg-yellow-500';
+                  statusText = ${classesData.total_held} held, ${classesData.total_cancelled} missed;
+                }
+              } else {
+                indicator = 'bg-gray-300';
+                statusText = 'No classes';
               }
               
               return (
@@ -393,46 +342,16 @@ function ViewTimeTable() {
                 >
                   <div className="flex flex-col items-center justify-center h-full">
                     <span className={`text-sm font-medium ${isToday ? 'text-blue-600 font-bold' : 'text-gray-700'}`}>
-                      {day.getDate()}
-                    </span>
-                    
-                    {/* Attendance Summary */}
-                    {showAttendance && (
+  {day.getDate()}
+</span>
+
+                    {appliedFilters && (
                       <div className="flex flex-col items-center mt-1">
-                        <div className="flex space-x-1">
-                          {/* Held Classes */}
-                          {attendanceForDate.total_held > 0 && (
-                            <div className="flex items-center">
-                              <Check className="w-3 h-3 text-green-500" />
-                              <span className="text-xs ml-0.5">{attendanceForDate.total_held}</span>
-                            </div>
-                          )}
-                          
-                          {/* Cancelled Classes */}
-                          {attendanceForDate.total_cancelled > 0 && (
-                            <div className="flex items-center">
-                              <X className="w-3 h-3 text-red-500" />
-                              <span className="text-xs ml-0.5">{attendanceForDate.total_cancelled}</span>
-                            </div>
-                          )}
+                        <div className="flex items-center gap-1">
+                          <div className={`w-2 h-2 rounded-full ${indicator}`}></div>
+
+                          <span className="text-xs text-gray-500">{statusText}</span>
                         </div>
-                        
-                        {/* No Data Indicator */}
-                        {attendanceForDate.no_data > 0 && (
-                          <div className="text-xs text-gray-400 mt-0.5">
-                            {attendanceForDate.no_data} no data
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* Original Class Count */}
-                    {!showAttendance && status !== 'no-data' && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <div className={`w-2 h-2 rounded-full ${indicator}`}></div>
-                        {classCount > 0 && (
-                          <span className="text-xs text-gray-500">{classCount}</span>
-                        )}
                       </div>
                     )}
                   </div>
@@ -470,99 +389,64 @@ function ViewTimeTable() {
             </div>
             
             <div className="p-6">
-              {selectedDateClasses.length === 0 ? (
-                <div className="text-center py-8">
-                  <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No classes scheduled for this date with the current filters.</p>
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-medium text-blue-800 mb-2">Attendance Summary</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <Check className="w-5 h-5 text-green-500" />
+                      <span className="font-medium">Classes Held</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-2 text-green-600">
+                      {getClassesForDate(selectedDate).total_held}
+                    </p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <X className="w-5 h-5 text-red-500" />
+                      <span className="font-medium">Classes Missed</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-2 text-red-600">
+                      {getClassesForDate(selectedDate).total_cancelled}
+                    </p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-gray-500" />
+                      <span className="font-medium">Total Scheduled</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-2 text-gray-600">
+                      {getClassesForDate(selectedDate).total_held + getClassesForDate(selectedDate).total_cancelled}
+                    </p>
+                  </div>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {selectedDateClasses.map((classData) => {
-                    const faculty = getFacultyById(classData.facultyId);
-                    const subject = getSubjectById(classData.subjectId);
-                    const course = getCourseById(classData.courseId);
-                    const room = getRoomById(classData.roomId);
-                    const semester = getSemesterById(classData.semester);
-                    
-                    return (
-                      <div
-                        key={classData.id}
-                        className={`p-6 rounded-lg border-l-4 ${
-                          classData.taken 
-                            ? 'bg-green-50 border-green-500' 
-                            : 'bg-red-50 border-red-500'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              {classData.taken ? (
-                                <Check className="w-6 h-6 text-green-600" />
-                              ) : (
-                                <AlertTriangle className="w-6 h-6 text-red-600" />
-                              )}
-                              <h4 className="text-lg font-semibold text-gray-800">
-                                {subject?.name || 'Unknown Subject'} ({subject?.code})
-                              </h4>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <Users className="w-4 h-4" />
-                                  <span><strong>Faculty:</strong> {faculty?.name || 'Unknown'}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <BookOpen className="w-4 h-4" />
-                                  <span><strong>Course:</strong> {course?.name || 'Unknown'}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <span><strong>Semester:</strong> {semester?.name || classData.semester}</span>
-                                </div>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <Clock className="w-4 h-4" />
-                                  <span><strong>Time:</strong> {classData.timeSlot}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <MapPin className="w-4 h-4" />
-                                  <span><strong>Room:</strong> {room?.name || 'Unknown'}</span>
-                                </div>
-                                {classData.taken && (
-                                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                                    <Users className="w-4 h-4" />
-                                    <span><strong>Attendance:</strong> {classData.studentsPresent}/{classData.totalStudents} students</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className={`px-4 py-2 rounded-full text-sm font-medium ml-4 ${
-                            classData.taken 
-                              ? 'bg-green-200 text-green-800' 
-                              : 'bg-red-200 text-red-800'
-                          }`}>
-                            {classData.taken ? 'Class Taken' : 'Class Missed'}
-                          </div>
-                        </div>
-                        
-                        {faculty && (
-                          <div className="mt-4 pt-4 border-t border-gray-200">
-                            <p className="text-sm text-gray-600">
-                              <strong>Department:</strong> {faculty.department} | 
-                              <strong> Designation:</strong> {faculty.designation} |
-                              <strong> Specialization:</strong> {faculty.specialization?.join(', ') || 'N/A'}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-gray-800 mb-2">Current Filters</h4>
+                  <div className="flex flex-wrap gap-4">
+                    <div>
+                      <span className="text-sm text-gray-600">Course: </span>
+                      <span className="text-sm font-medium">
+                        {selectedCourse === 'all' ? 'All' : academicData.courses.find(c => c.id === selectedCourse)?.name}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Faculty: </span>
+                      <span className="text-sm font-medium">
+                        {selectedFaculty === 'all' ? 'All' : academicData.faculties.find(f => f.id === selectedFaculty)?.name}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Semester: </span>
+                      <span className="text-sm font-medium">
+                        {selectedSemester === 'all' ? 'All' : Semester ${selectedSemester}}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
