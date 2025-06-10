@@ -16,7 +16,7 @@ const LoginPage = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     await login(username, password);
-    console.log("Login attempted with:", username, password);
+    // console.log("Login attempted with:", username, password);
   };
 
   const currentYear = new Date().getFullYear();

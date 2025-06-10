@@ -253,7 +253,7 @@ function ViewTimeTable() {
   const selectedDateClasses = selectedDate ? getFilteredClasses(getClassesForDate(selectedDate)) : [];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex flex-col lg:flex-row gap-6 mb-6">

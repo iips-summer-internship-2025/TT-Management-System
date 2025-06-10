@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
 
@@ -40,7 +39,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -73,7 +73,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!coursesResponse.ok) {
@@ -87,11 +88,15 @@ const ManageCourses = () => {
                 coursesData.map(async (course) => {
                     try {
                         // Fetch subjects for this course
-                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`);
+                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`, {
+                            credentials: 'include'
+                        });
                         const subjects = subjectsResponse.ok ? await subjectsResponse.json() : [];
                         
                         // Fetch batches for this course
-                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`);
+                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`, {
+                            credentials: 'include'
+                        });
                         const batches = batchesResponse.ok ? await batchesResponse.json() : [];
                         
                         return {
@@ -165,6 +170,7 @@ const ManageCourses = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include credentials for CORS
                 body: JSON.stringify(courseData)
             });
 
@@ -196,7 +202,8 @@ const ManageCourses = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -255,7 +262,6 @@ const ManageCourses = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="flex items-center space-x-3">
                         <FaSpinner className="animate-spin text-blue-500 text-2xl" />
@@ -269,7 +275,6 @@ const ManageCourses = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="text-red-500 text-lg mb-4">{error}</div>
@@ -287,8 +292,6 @@ const ManageCourses = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar />
-
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
