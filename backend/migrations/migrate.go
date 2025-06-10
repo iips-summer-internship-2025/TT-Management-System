@@ -15,6 +15,7 @@ func Migrate() error {
 		&models.Subject{},
 		&models.Room{},
 		&models.Lecture{},
+		&models.Session{},
 	)
 	return err
 }

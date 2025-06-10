@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
       // setUser({ username: res.data.username, role: res.data.role });
@@ -64,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
       console.log(res.status);
       if (res.status == 200) {
@@ -76,9 +78,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    validateSession();
-  }, []);
+  // useEffect(() => {
+  //   validateSession();
+  // }, []);
 
   return (
     <AuthContext.Provider

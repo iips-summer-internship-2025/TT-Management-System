@@ -1,11 +1,14 @@
 import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
+import Layout from "./components/Layout";
 import AppRoutes from "./routes/AppRoutes";
 
 const App = () => {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <Layout>
+        <AppRoutes />
+      </Layout>
     </AuthProvider>
   );
 };

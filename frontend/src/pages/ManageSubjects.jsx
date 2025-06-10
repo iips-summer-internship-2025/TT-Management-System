@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBook, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
 
@@ -33,7 +32,11 @@ const ManageSubjects = () => {
 
     const fetchCourses = async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.GET_COURSES);
+            const response = await fetch(API_ENDPOINTS.GET_COURSES, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
             if (!response.ok) throw new Error('Failed to fetch courses');
             const data = await response.json();
             setCourses(data);
@@ -50,7 +53,8 @@ const ManageSubjects = () => {
             const [subjectsResponse] = await Promise.all([
                 fetch(API_ENDPOINTS.GET_SUBJECTS, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
                 }),
                 fetchCourses()
             ]);
@@ -119,6 +123,7 @@ const handleSaveNewSubject = async () => {
         const response = await fetch(endpoint, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(subjectData)
         });
 
@@ -149,7 +154,8 @@ const handleSaveNewSubject = async () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -196,7 +202,6 @@ const handleEdit = (id) => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="flex items-center space-x-3">
                         <FaSpinner className="animate-spin text-blue-500 text-2xl" />
@@ -210,7 +215,6 @@ const handleEdit = (id) => {
     if (error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="text-red-500 text-lg mb-4">{error}</div>
@@ -228,8 +232,6 @@ const handleEdit = (id) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar />
-
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

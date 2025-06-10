@@ -101,7 +101,7 @@ export default function NavBar({ onLogout }) {
 
             <button
               type="button"
-              onClick={logoutHandler}
+              onClick={handleLogout}
               className="w-full bg-gradient-to-r from-rose-500 to-red-600 text-white py-3 px-4 rounded-lg hover:from-rose-600 hover:to-red-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
             >
               <FaSignOutAlt />

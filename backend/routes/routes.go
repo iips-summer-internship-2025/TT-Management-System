@@ -12,6 +12,7 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	r.Use(middleware.CORSMiddleware())
 
+	role := middleware.RoleAuthMiddleware
 	db := config.DB
 	api := r.Group("/api/v1")
 	{
@@ -19,7 +20,7 @@ func RegisterRoutes(r *gin.Engine) {
 		api.POST("/login", controllers.Login)
 
 		// INFO: Protected routes
-		// api.Use(middleware.JWTAuthMiddleware())
+		api.Use(middleware.JWTAuthMiddleware())
 		api.POST("/logout", controllers.Logout)
 		course := api.Group("/course")
 		{
@@ -63,7 +64,7 @@ func RegisterRoutes(r *gin.Engine) {
 		}
 		user := api.Group("/user")
 		{
-			user.GET("", controllers.All[models.User](db))
+			user.GET("", role("superadmin"), controllers.All[models.User](db))
 			user.POST("", controllers.Create[models.User](db))
 			user.GET("/:id", controllers.Get[models.User](db))
 			user.PUT("/:id", controllers.Update[models.User](db))
@@ -84,6 +85,11 @@ func RegisterRoutes(r *gin.Engine) {
 			session.GET("/:id", controllers.Get[models.Session](db))
 			session.PUT("/:id", controllers.Update[models.Session](db))
 			session.DELETE("/:id", controllers.Delete[models.Session](db))
+		}
+		calendar := api.Group("/calendar")
+		{
+			calendar.GET("", controllers.GetCalendarSummaryByMonth)
+			calendar.GET("/day", controllers.GetLectureDetailsByDate)
 		}
 	}
 }
