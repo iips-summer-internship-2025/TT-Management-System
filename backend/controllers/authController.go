@@ -44,7 +44,6 @@ func Login(c *gin.Context) {
 		"message":  "Login Successful",
 		"username": user.Username,
 		"role":     user.Role,
-		"token":    token,
 	})
 }
 
