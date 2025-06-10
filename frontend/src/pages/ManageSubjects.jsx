@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaBook, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
+import { useUserRole } from '../context/UserRoleContext';
 
 const ManageSubjects = () => {
     const [subjects, setSubjects] = useState([]);
@@ -18,6 +19,7 @@ const ManageSubjects = () => {
         course_code: "",
         course_id: ""
     });
+    const { userRole } = useUserRole();
 
     const navigate = useNavigate();
 
@@ -279,7 +281,7 @@ const handleEdit = (id) => {
                                 />
                             </div>
                             <button
-                                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
+                                className={`bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                                 onClick={handleAddNewSubject}
                             >
                                 <FaPlus className="text-sm" />
@@ -353,13 +355,13 @@ const handleEdit = (id) => {
                                     </span>
                                     <div className="flex space-x-2">
                                         <button
-                                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
+                                            className={`bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                                             onClick={() => handleEdit(subject.id)}
                                         >
                                             <FaEdit className="text-sm" />
                                         </button>
                                         <button
-                                            className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
+                                            className={`bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                                             onClick={() => handleDelete(subject.id)}
                                         >
                                             <FaTrash className="text-sm" />

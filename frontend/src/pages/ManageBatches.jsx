@@ -11,6 +11,8 @@ import {
   FaSearch,
   FaBook,
 } from "react-icons/fa";
+import { useUserRole } from '../context/UserRoleContext';
+
 
 const ManageBatches = () => {
   const [batches, setBatches] = useState([]);
@@ -28,6 +30,7 @@ const ManageBatches = () => {
     section: "",
     course_id: "",
   });
+  const { userRole } = useUserRole();
 
   const navigate = useNavigate();
 
@@ -48,6 +51,7 @@ const ManageBatches = () => {
       if (!response.ok) throw new Error("Failed to fetch courses");
       const data = await response.json();
       setCourses(data);
+      console.log(userRole);
     } catch (err) {
       console.error("Error fetching courses:", err);
     }
@@ -311,7 +315,7 @@ const ManageBatches = () => {
                 />
               </div>
               <button
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
+                className={`bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                 onClick={handleAddNewBatch}
               >
                 <FaPlus className="text-sm" />
@@ -347,14 +351,14 @@ const ManageBatches = () => {
                     <td className="px-6 py-4">
                       <div className="flex justify-center space-x-2">
                         <button
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
+                          className={`bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                           onClick={() => handleEdit(batch.id)}
                           title="Edit Batch"
                         >
                           <FaEdit className="text-sm" />
                         </button>
                         <button
-                          className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
+                          className={`bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                           onClick={() => handleDelete(batch.id)}
                           title="Delete Batch"
                         >

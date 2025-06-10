@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
+import { useUserRole } from '../context/UserRoleContext';
 
 const ManageCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -17,6 +18,7 @@ const ManageCourses = () => {
         name: "",
         code: ""
     });
+    const { userRole } = useUserRole();
 
     const navigate = useNavigate();
 
@@ -339,7 +341,7 @@ const ManageCourses = () => {
                                 />
                             </div>
                             <button
-                                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
+                                className={`bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                                 onClick={handleAddNewCourse}
                             >
                                 <FaPlus className="text-sm" />
@@ -375,14 +377,14 @@ const ManageCourses = () => {
                                         <td className="px-6 py-4">
                                             <div className="flex justify-center space-x-2">
                                                 <button
-                                                    className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                                                    className={`bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                                                     onClick={() => handleEdit(course)}
                                                     title="Edit Course"
                                                 >
                                                     <FaEdit className="text-sm" />
                                                 </button>
                                                 <button
-                                                    className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                                                    className={`bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
                                                     onClick={() => handleDelete(course.ID)}
                                                     title="Delete Course"
                                                 >
