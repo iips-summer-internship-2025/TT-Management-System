@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"tms-server/models"
 	"tms-server/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Ping(c *gin.Context) {
@@ -39,7 +40,11 @@ func Login(c *gin.Context) {
 		true,
 	)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login Successful"})
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "Login Successful",
+		"username": user.Username,
+		"role":     user.Role,
+	})
 }
 
 func Logout(c *gin.Context) {
