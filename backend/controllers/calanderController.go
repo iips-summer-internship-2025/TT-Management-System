@@ -34,7 +34,6 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 
 	query := config.DB.Model(&models.Session{}).
 		Joins("JOIN lectures ON lectures.id = sessions.lecture_id").
-		Joins("JOIN batches ON batches.id = lectures.batch_id").
 		Where("EXTRACT(MONTH FROM sessions.date) = ?", month).
 		Where("EXTRACT(YEAR FROM sessions.date) = ?", year)
 
@@ -43,7 +42,7 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 		query = query.Where("lectures.semester = ?", semester)
 	}
 	if courseID != "" {
-		query = query.Where("batches.course_id = ?", courseID)
+		query = query.Where("lectures.subject_id = ?", courseID)
 	}
 	if facultyID != "" {
 		query = query.Where("lectures.faculty_id = ?", facultyID)
@@ -132,18 +131,19 @@ func GetLectureDetailsByDate(c *gin.Context) {
 		Preload("Faculty").
 		Preload("Room").
 		Preload("Batch.Course").
-		Joins("JOIN batches ON batches.id = lectures.batch_id").
 		Where("lectures.id IN ?", lectureIDs)
 
 	// Optional Filters (faculty_id, course_id, semester)
 	if semester != "" {
-		lectureQuery = lectureQuery.Where("lectures.semester = ?", semester)
+		lectureQuery = lectureQuery.Where("semester = ?", semester)
 	}
 	if facultyID != "" {
-		lectureQuery = lectureQuery.Where("lectures.faculty_id = ?", facultyID)
+		lectureQuery = lectureQuery.Where("faculty_id = ?", facultyID)
 	}
 	if courseID != "" {
-		lectureQuery = lectureQuery.Where("batches.course_id = ?", courseID)
+		lectureQuery = lectureQuery.
+			Joins("JOIN batches ON batches.id = lectures.batch_id").
+			Where("batches.course_id = ?", courseID)
 	}
 
 	var lectures []models.Lecture
