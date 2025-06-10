@@ -24,7 +24,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.Username)
+	token, err := utils.GenerateToken(user.Username, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
@@ -32,7 +32,7 @@ func Login(c *gin.Context) {
 
 	c.SetCookie(
 		"auth_token", token,
-		604800, // expires in 7 days (604800 seconds)
+		int(utils.TokenExpiry.Seconds()), // expires in 7 days (604800 seconds)
 		"/",
 		"",
 		true,
