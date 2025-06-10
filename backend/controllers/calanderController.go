@@ -13,8 +13,8 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 	month := c.Query("month")
 	year := c.Query("year")
 	semester := c.Query("semester")
-	courseID := c.Query("course_id")
 	facultyID := c.Query("faculty_id")
+	courseID := c.Query("course_id")
 
 	if month == "" || year == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -41,11 +41,13 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 	if semester != "" {
 		query = query.Where("lectures.semester = ?", semester)
 	}
-	if courseID != "" {
-		query = query.Where("lectures.subject_id = ?", courseID)
-	}
 	if facultyID != "" {
 		query = query.Where("lectures.faculty_id = ?", facultyID)
+	}
+	if courseID != "" {
+		query = query.
+			Joins("JOIN batches ON batches.id = lectures.batch_id").
+			Where("batches.course_id = ?", courseID)
 	}
 
 	var sessions []models.Session
@@ -96,8 +98,8 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 func GetLectureDetailsByDate(c *gin.Context) {
 	dateStr := c.Query("date")
 	semester := c.Query("semester")
-	courseID := c.Query("course_id")
 	facultyID := c.Query("faculty_id")
+	courseID := c.Query("course_id")
 
 	if dateStr == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "date is required in YYYY-MM-DD format"})
@@ -135,10 +137,10 @@ func GetLectureDetailsByDate(c *gin.Context) {
 
 	// Optional Filters (faculty_id, course_id, semester)
 	if semester != "" {
-		lectureQuery = lectureQuery.Where("semester = ?", semester)
+		lectureQuery = lectureQuery.Where("lectures.semester = ?", semester)
 	}
 	if facultyID != "" {
-		lectureQuery = lectureQuery.Where("faculty_id = ?", facultyID)
+		lectureQuery = lectureQuery.Where("lectures.faculty_id = ?", facultyID)
 	}
 	if courseID != "" {
 		lectureQuery = lectureQuery.
