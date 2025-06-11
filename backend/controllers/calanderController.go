@@ -182,6 +182,7 @@ func GetLectureDetailsByDate(c *gin.Context) {
 			"batch_year":    lecture.Batch.Year,
 			"batch_section": lecture.Batch.Section,
 			"course_name":   lecture.Batch.Course.Name,
+			"session_id":   s.ID,
 		})
 	}
 
