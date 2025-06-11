@@ -351,7 +351,7 @@ const ManageSubjects = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center space-x-2">
-                        {userRole !== "admin" && (
+                        {userRole === "admin" && (
                           <>
                             <button
                               className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
