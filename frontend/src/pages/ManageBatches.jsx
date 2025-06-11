@@ -11,8 +11,7 @@ import {
   FaSearch,
   FaBook,
 } from "react-icons/fa";
-import { useUserRole } from '../context/UserRoleContext';
-
+import { useUserRole } from "../context/UserRoleContext";
 
 const ManageBatches = () => {
   const [batches, setBatches] = useState([]);
@@ -56,7 +55,7 @@ const ManageBatches = () => {
       console.error("Error fetching courses:", err);
     }
   };
-  
+
   const fetchBatches = async () => {
     try {
       setLoading(true);
@@ -190,7 +189,6 @@ const ManageBatches = () => {
         },
         credentials: "include",
       });
-      
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -314,13 +312,16 @@ const ManageBatches = () => {
                   className="pl-10 w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                 />
               </div>
-              <button
-                className={`bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
-                onClick={handleAddNewBatch}
-              >
-                <FaPlus className="text-sm" />
-                <span>Add Batch</span>
-              </button>
+
+              {userRole === "admin" && (
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
+                  onClick={handleAddNewBatch}
+                >
+                  <FaPlus className="text-sm" />
+                  <span>Add Batch</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -350,20 +351,25 @@ const ManageBatches = () => {
                     <td className="px-6 py-4">{getCoursesDisplay(batch)}</td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center space-x-2">
-                        <button
-                          className={`bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
-                          onClick={() => handleEdit(batch.id)}
-                          title="Edit Batch"
-                        >
-                          <FaEdit className="text-sm" />
-                        </button>
-                        <button
-                          className={`bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg ${userRole === 'user' ? 'pointer-events-none opacity-50' : ''}`}
-                          onClick={() => handleDelete(batch.id)}
-                          title="Delete Batch"
-                        >
-                          <FaTrash className="text-sm" />
-                        </button>
+                        {userRole === "admin" && (
+                          <>
+                            <button
+                              className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
+                              onClick={() => handleEdit(batch.id)}
+                              title="Edit Batch"
+                            >
+                              <FaEdit className="text-sm" />
+                            </button>
+
+                            <button
+                              className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
+                              onClick={() => handleDelete(batch.id)}
+                              title="Delete Batch"
+                            >
+                              <FaTrash className="text-sm" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -469,8 +475,8 @@ const ManageBatches = () => {
                   value={newBatch.year}
                   onChange={(e) => {
                     // Only allow numbers
-                    const value = e.target.value
-                    setNewBatch((prev) => ({ ...prev, year: value }))
+                    const value = e.target.value;
+                    setNewBatch((prev) => ({ ...prev, year: value }));
                   }}
                   placeholder="Enter batch year (e.g., 2023)"
                   disabled={addingBatch}
