@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { FaEdit } from "react-icons/fa";
 import {
   ChevronLeft,
   ChevronRight,
@@ -61,15 +62,15 @@ function ViewTimeTable() {
   const [lectures, setLectures] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
 
-const API_BASE_URL = "http://localhost:8080/api/v1";
-const API_ENDPOINTS = {
-  GET_COURSE: `${API_BASE_URL}/course`,
-  GET_FACULTY: `${API_BASE_URL}/faculty`,
-  LECTURE: `${API_BASE_URL}/lecture`,
-  CALENDAR: `${API_BASE_URL}/calendar`,
-  CALENDAR_DAY: `${API_BASE_URL}/calendar/day`,
-  UPDATE_STATUS: `${API_BASE_URL}/session`,
-};
+  const API_BASE_URL = "http://localhost:8080/api/v1";
+  const API_ENDPOINTS = {
+    GET_COURSE: `${API_BASE_URL}/course`,
+    GET_FACULTY: `${API_BASE_URL}/faculty`,
+    LECTURE: `${API_BASE_URL}/lecture`,
+    CALENDAR: `${API_BASE_URL}/calendar`,
+    CALENDAR_DAY: `${API_BASE_URL}/calendar/day`,
+    SESSION: `${API_BASE_URL}/session`, // Add this line
+  };
 
   useEffect(() => {
     fetchAllInitialData();
@@ -92,89 +93,87 @@ const API_ENDPOINTS = {
     }
   };
 
-const StatusModal = ({ lecture, onClose, onUpdate }) => {
-  const [selectedStatus, setSelectedStatus] = useState(lecture.status || 'held');
-  
-  const statusOptions = [
-    { value: 'held', label: 'Class Taken', color: 'green', icon: Check },
-    { value: 'cancelled', label: 'Class Missed', color: 'red', icon: X },
-    { value: '', label: 'No Entry', color: 'yellow', icon: AlertTriangle },
-  ];
-return (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div 
-      ref={statusModalRef}
-      className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-scale-in"
-      onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from bubbling up
-    >
-      {/* Rest of your modal content remains the same */}
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-gray-800">Update Class Status</h3>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-          <X className="w-6 h-6" />
-        </button>
-      </div>
-      
-      <div className="mb-6">
-        <p className="text-gray-700 mb-2">
-          <span className="font-semibold">Subject:</span> {lecture.subject || 'N/A'}
-        </p>
-        <p className="text-gray-700">
-          <span className="font-semibold">Time:</span> {lecture.start_time}-{lecture.end_time}
-        </p>
-      </div>
-      
-      <div className="space-y-3 mb-6">
-        {statusOptions.map((option) => (
-          <div 
-            key={option.value}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent event bubbling
-              setSelectedStatus(option.value);
-            }}
-            className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all ${
-              selectedStatus === option.value 
-                ? `border-${option.color}-500 bg-${option.color}-50`
-                : 'border-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            <option.icon className={`w-5 h-5 text-${option.color}-600`} />
-            <span className="font-medium">{option.label}</span>
+  const StatusModal = ({ lecture, onClose, onUpdate }) => {
+    const [selectedStatus, setSelectedStatus] = useState(lecture.status || 'held');
+
+    const statusOptions = [
+      { value: 'held', label: 'Class Taken', color: 'green', icon: Check },
+      { value: 'cancelled', label: 'Class Missed', color: 'red', icon: X },
+      { value: "", label: 'No Entry', color: 'yellow', icon: AlertTriangle },
+    ];
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div
+          ref={statusModalRef}
+          className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-scale-in"
+          onClick={(e) => e.stopPropagation()} // Prevent clicks inside modal from bubbling up
+        >
+          {/* Rest of your modal content remains the same */}
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-gray-800">Update Class Status</h3>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+              <X className="w-6 h-6" />
+            </button>
           </div>
-        ))}
+
+          <div className="mb-6">
+            <p className="text-gray-700 mb-2">
+              <span className="font-semibold">Subject:</span> {lecture.subject || 'N/A'}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-semibold">Time:</span> {lecture.start_time}-{lecture.end_time}
+            </p>
+          </div>
+
+          <div className="space-y-3 mb-6">
+            {statusOptions.map((option) => (
+              <div
+                key={option.value}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent event bubbling
+                  setSelectedStatus(option.value);
+                }}
+                className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all ${selectedStatus === option.value
+                    ? `border-${option.color}-500 bg-${option.color}-50`
+                    : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+              >
+                <option.icon className={`w-5 h-5 text-${option.color}-600`} />
+                <span className="font-medium">{option.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate(lecture.lecture_id, lecture.date, selectedStatus);
+              }}
+              disabled={statusChangeLoading}
+              className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${statusChangeLoading ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
+            >
+              {statusChangeLoading ? (
+                <>
+                  <Spinner className="w-4 h-4" />
+                  Updating...
+                </>
+              ) : (
+                'Update Status'
+              )}
+            </button>
+          </div>
+        </div>
       </div>
-      
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onUpdate(lecture.lecture_id, lecture.date, selectedStatus);
-          }}
-          disabled={statusChangeLoading}
-          className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${
-            statusChangeLoading ? 'opacity-70 cursor-not-allowed' : ''
-          }`}
-        >
-          {statusChangeLoading ? (
-            <>
-              <Spinner className="w-4 h-4" />
-              Updating...
-            </>
-          ) : (
-            'Update Status'
-          )}
-        </button>
-      </div>
-    </div>
-  </div>
-);
-};
+    );
+  };
 
   const fetchCourses = async () => {
     try {
@@ -316,22 +315,57 @@ return (
     }
   };
 
-const updateLectureStatus = async (lectureId, date, newStatus) => {
-  setStatusChangeLoading(true);
-  console.log(selectedLecture);
-  try {
-    // TODO: Going to Impliment Staus Change logic here
-    setShowStatusModal(false);
-    setSelectedLecture(null);
-    setError(null);
+  const updateLectureStatus = async (lectureId, date, newStatus) => {
+    setStatusChangeLoading(true);
+    console.log("Updating lecture status:", {
+      lectureId,
+      date,
+      newStatus,
+      sessionId: selectedLecture.session_id
+    });
 
-  } catch (err) {
-    console.error("Error updating lecture status:", err);
-    setError(`Failed to update status: ${err.message}`);
-  } finally {
-    setStatusChangeLoading(false);
-  }
-};
+    try {
+      const sessionId = selectedLecture.session_id;
+
+      // Use the correct endpoint from your routes.go file
+      const response = await fetch(`${API_BASE_URL}/session/${sessionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          status: newStatus
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Status updated successfully:", data);
+
+      // Close modal and refresh data
+      setShowStatusModal(false);
+      setSelectedLecture(null);
+      setError(null);
+
+      // Refresh both month summary and day details to reflect changes
+      await Promise.all([
+        fetchMonthSummary(),
+        selectedDate && fetchDayDetails(selectedDate)
+      ]);
+
+    } catch (err) {
+      console.error("Error updating lecture status:", err);
+      setError(`Failed to update status: ${err.message}`);
+    } finally {
+      setStatusChangeLoading(false);
+    }
+  };
 
   const handleStatusClick = (lecture) => {
     setSelectedLecture({ ...lecture, date: selectedDate.toISOString().split('T')[0] });
@@ -355,22 +389,22 @@ const updateLectureStatus = async (lectureId, date, newStatus) => {
     }
   }, [selectedDate, selectedCourse, selectedFaculty, selectedSemester, initialLoading]);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    // Check if the status modal is open and if the click is outside the modal content
-    if (showStatusModal && statusModalRef.current && !statusModalRef.current.contains(event.target)) {
-      // Only close if not clicking inside the main modal either
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        closeStatusModal();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the status modal is open and if the click is outside the modal content
+      if (showStatusModal && statusModalRef.current && !statusModalRef.current.contains(event.target)) {
+        // Only close if not clicking inside the main modal either
+        if (modalRef.current && !modalRef.current.contains(event.target)) {
+          closeStatusModal();
+        }
       }
+    };
+
+    if (showStatusModal) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  };
-  
-  if (showStatusModal) {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, [showStatusModal]);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showStatusModal]);
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -418,18 +452,18 @@ useEffect(() => {
     setSelectedDate(null);
   };
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    // Only close if clicking on the backdrop (the outer overlay div)
-    if (event.target.classList.contains('bg-black/50')) {
-      closeStatusModal();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Only close if clicking on the backdrop (the outer overlay div)
+      if (event.target.classList.contains('bg-black/50')) {
+        closeStatusModal();
+      }
+    };
+    if (showStatusModal) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  };
-  if (showStatusModal) {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, [showStatusModal]);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showStatusModal]);
 
   const getCourseNameById = (id) => courses.find(c => c.ID === parseInt(id))?.Name || id;
   const getFacultyNameById = (id) => faculties.find(f => f.ID === parseInt(id))?.Name || id;
@@ -560,8 +594,8 @@ useEffect(() => {
           <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 p-4 bg-gray-50/80 rounded-lg justify-center">
             <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-500 rounded-full shadow-sm"></div><span className="text-sm text-gray-700">Held</span></div>
             <div className="flex items-center gap-2"><div className="w-4 h-4 bg-red-500 rounded-full shadow-sm"></div><span className="text-sm text-gray-700">Canceled</span></div>
-            <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-400 rounded-full shadow-sm"></div><span className="text-sm text-gray-700">Partial</span></div>
-            <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-300 rounded-full shadow-sm"></div><span className="text-sm text-gray-700">No Classes</span></div>
+            {/* <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-400 rounded-full shadow-sm"></div><span className="text-sm text-gray-700">Partial</span></div> */}
+            <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-300 rounded-full shadow-sm"></div><span className="text-sm text-gray-700">No Entry</span></div>
           </div>
 
           <div className="relative">
@@ -600,147 +634,146 @@ useEffect(() => {
       </div>
 
       {showModal && selectedDate && (
-<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>          <div ref={modalRef} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out scale-95 animate-scale-in">
-            <div className="p-6 border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-10">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-gray-800">
-                  <span className="font-normal">{selectedDate.toLocaleDateString("en-US", { weekday: "long" })},</span> {selectedDate.toLocaleDateString("en-US", { month: "long", day: "numeric" })}
-                </h3>
-                <button onClick={closeModal} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X className="w-6 h-6 text-gray-600" /></button>
-              </div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>          <div ref={modalRef} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out scale-95 animate-scale-in">
+          <div className="p-6 border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-gray-800">
+                <span className="font-normal">{selectedDate.toLocaleDateString("en-US", { weekday: "long" })},</span> {selectedDate.toLocaleDateString("en-US", { month: "long", day: "numeric" })}
+              </h3>
+              <button onClick={closeModal} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X className="w-6 h-6 text-gray-600" /></button>
             </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                {[
-                  { title: 'Classes Held', value: getClassesForDate(selectedDate).total_held, Icon: Check, color: 'green' },
-                  { title: 'Classes Missed', value: getClassesForDate(selectedDate).total_cancelled, Icon: X, color: 'red' },
-                  { title: 'Total Scheduled', value: getClassesForDate(selectedDate).total_held + getClassesForDate(selectedDate).total_cancelled, Icon: Calendar, color: 'gray' },
-                ].map(({ title, value, Icon, color }) => (
-                  <div key={title} className={`p-4 rounded-xl shadow-md bg-gradient-to-tr from-${color}-100 to-${color}-200`}>
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 bg-white rounded-full shadow-sm`}><Icon className={`w-5 h-5 text-${color}-600`} /></div>
-                      <span className={`font-semibold text-${color}-800`}>{title}</span>
-                    </div>
-                    <p className={`text-4xl font-bold mt-3 text-${color}-700`}>{value}</p>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              {[
+                { title: 'Classes Held', value: getClassesForDate(selectedDate).total_held, Icon: Check, color: 'green' },
+                { title: 'Classes Missed', value: getClassesForDate(selectedDate).total_cancelled, Icon: X, color: 'red' },
+                { title: 'Total Scheduled', value: getClassesForDate(selectedDate).total_held + getClassesForDate(selectedDate).total_cancelled, Icon: Calendar, color: 'gray' },
+              ].map(({ title, value, Icon, color }) => (
+                <div key={title} className={`p-4 rounded-xl shadow-md bg-gradient-to-tr from-${color}-100 to-${color}-200`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 bg-white rounded-full shadow-sm`}><Icon className={`w-5 h-5 text-${color}-600`} /></div>
+                    <span className={`font-semibold text-${color}-800`}>{title}</span>
                   </div>
-                ))}
-              </div>
-
-              {loading ? (
-                <div className="text-center py-12 flex flex-col items-center">
-                  <Spinner />
-                  <p className="mt-4 text-gray-600">Loading Details...</p>
+                  <p className={`text-4xl font-bold mt-3 text-${color}-700`}>{value}</p>
                 </div>
-              ) : dayDetails.length > 0 ? (
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-800 text-xl pb-2 border-b-2 border-blue-200">Class Details</h4>
-                  {dayDetails.map((detail, index) => (
-                    <div
-                      key={index}
-                      className={`border-l-4 rounded-xl p-6 mb-4 transition-all duration-300 hover:shadow-lg ${
-                        detail.status === 'held'
-                          ? 'border-green-400 bg-green-50 hover:bg-green-100'
-                          : detail.status === 'cancelled'
+              ))}
+            </div>
+
+            {loading ? (
+              <div className="text-center py-12 flex flex-col items-center">
+                <Spinner />
+                <p className="mt-4 text-gray-600">Loading Details...</p>
+              </div>
+            ) : dayDetails.length > 0 ? (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-gray-800 text-xl pb-2 border-b-2 border-blue-200">Class Details</h4>
+                {dayDetails.map((detail, index) => (
+                  <div
+                    key={index}
+                    className={`border-l-4 rounded-xl p-6 mb-4 transition-all duration-300 hover:shadow-lg ${detail.status === 'held'
+                        ? 'border-green-400 bg-green-50 hover:bg-green-100'
+                        : detail.status === 'cancelled'
                           ? 'border-red-400 bg-red-50 hover:bg-red-100'
                           : 'border-yellow-400 bg-yellow-50 hover:bg-yellow-100'
                       }`}
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          {detail.status === 'held' ? (
-                            <Check className="w-5 h-5 text-green-600" />
-                          ) : detail.status === 'cancelled' ? (
-                            <X className="w-5 h-5 text-red-600" />
-                          ) : (
-                            <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                          )}
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {detail.subject || 'Subject N/A'}
-                          </h3>
-                        </div>
-                        <button
-                          onClick={() => handleStatusClick(detail)}
-                          className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${
-                            detail.status === 'held'
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                              : detail.status === 'cancelled'
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        {detail.status === 'held' ? (
+                          <Check className="w-5 h-5 text-green-600" />
+                        ) : detail.status === 'cancelled' ? (
+                          <X className="w-5 h-5 text-red-600" />
+                        ) : (
+                          <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                        )}
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {detail.subject || 'Subject N/A'}
+                        </h3>
+                      </div>
+                      <button
+                        onClick={() => handleStatusClick(detail)}
+                        className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${detail.status === 'held'
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                            : detail.status === 'cancelled'
                               ? 'bg-red-100 text-red-800 hover:bg-red-200'
                               : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
                           }`}
-                          title="Click to change status"
-                        >
-                          {detail.status === 'held'
-                            ? 'Class Taken'
-                            : detail.status === 'cancelled'
+                        title="Click to change status"
+                      >
+                        <FaEdit className="text-current" /> {/* Add the edit icon */}
+                        {detail.status === 'held'
+                          ? 'Class Taken'
+                          : detail.status === 'cancelled'
                             ? 'Class Missed'
                             : 'Partial Class'}
-                        </button>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">Faculty:</span>
+                        <span className="text-sm font-medium text-gray-800">
+                          {detail.faculty || 'N/A'}
+                        </span>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm text-gray-600">Faculty:</span>
-                          <span className="text-sm font-medium text-gray-800">
-                            {detail.faculty || 'N/A'}
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">Course:</span>
+                        <span className="text-sm font-medium text-gray-800">
+                          {detail.course_name || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
 
-                        <div className="flex items-center gap-2">
-                          <BookOpen className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm text-gray-600">Course:</span>
-                          <span className="text-sm font-medium text-gray-800">
-                            {detail.course_name || 'N/A'}
-                          </span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-blue-500" />
+                        <div>
+                          <span className="text-gray-600">Time:</span>
+                          <div className="font-medium text-gray-800">
+                            {detail.start_time && detail.end_time
+                              ? `${detail.start_time}-${detail.end_time}`
+                              : 'N/A'
+                            }
+                          </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-blue-500" />
-                          <div>
-                            <span className="text-gray-600">Time:</span>
-                            <div className="font-medium text-gray-800">
-                              {detail.start_time && detail.end_time
-                                ? `${detail.start_time}-${detail.end_time}`
-                                : 'N/A'
-                              }
-                            </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-orange-500" />
+                        <div>
+                          <span className="text-gray-600">Room:</span>
+                          <div className="font-medium text-gray-800">
+                            {detail.room || 'N/A'}
                           </div>
                         </div>
+                      </div>
 
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-orange-500" />
-                          <div>
-                            <span className="text-gray-600">Room:</span>
-                            <div className="font-medium text-gray-800">
-                              {detail.room || 'N/A'}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-indigo-500" />
-                          <div>
-                            <span className="text-gray-600">Batch:</span>
-                            <div className="font-medium text-gray-800">
-                              {`${detail.course_name || ''} ${detail.batch_year || ''} ${detail.batch_section || ''}`.trim() || 'N/A'}
-                            </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-indigo-500" />
+                        <div>
+                          <span className="text-gray-600">Batch:</span>
+                          <div className="font-medium text-gray-800">
+                            {`${detail.course_name || ''} ${detail.batch_year || ''} ${detail.batch_section || ''}`.trim() || 'N/A'}
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-16 text-gray-500">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-xl font-semibold">No Classes Scheduled</h3>
-                  <p>There is no class data available for this day with the current filters.</p>
-                </div>
-              )}
-            </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 text-gray-500">
+                <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <h3 className="text-xl font-semibold">No Classes Scheduled</h3>
+                <p>There is no class data available for this day with the current filters.</p>
+              </div>
+            )}
           </div>
+        </div>
         </div>
       )}
 
