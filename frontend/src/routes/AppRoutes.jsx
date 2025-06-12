@@ -15,6 +15,8 @@ import UpdateTimeTable from "../pages/ViewTimeTable";
 import ManageCourses from "../pages/ManageCourses";
 import ManageFaculty from "../pages/ManageFaculty";
 import ManageBatches from "../pages/ManageBatches";
+import SignUpPage from "../pages/SignupPage";
+import AdminApprovalPage from "../pages/AdminApprovalPage";
 
 
 const AppRoutes = () => {
@@ -112,6 +114,24 @@ const AppRoutes = () => {
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <ManageBatches/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route 
+        path="/signup"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <SignUpPage/>
+          //</PrivateRoute>
+        }
+        />
+        
+      <Route 
+        path="/admin-approval"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <AdminApprovalPage/>
           //</PrivateRoute>
         }
         />
