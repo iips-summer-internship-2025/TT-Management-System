@@ -11,6 +11,7 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { FaTableCells } from "react-icons/fa6";
+import { useUserRole } from "../context/UserRoleContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Dashboard = () => {
     rooms: 0,
     courses: 0
   });
+  const { userRole } = useUserRole();
 
   const API_BASE_URL = "http://localhost:8080/api/v1";
   const API_ENDPOINTS = {
@@ -195,14 +197,15 @@ const Dashboard = () => {
     },
     {
       title: "View Tables",
-      description: "View existing timetables",
+      description: userRole === "admin"
+    ? "Manage existing timetables" : "View existing timetables",
       icon: FaTableCells,
       iconColor: "bg-emerald-500",
       hoverColor: "hover:bg-emerald-50",
       route: "/view-timetable",
     },
     {
-      title: "Manage Courses",
+      title: userRole === "admin" ? "Manage Courses" : "View Courses",
       description: "View existing courses",
       icon: FaEdit,
       iconColor: "bg-amber-500",
@@ -210,32 +213,40 @@ const Dashboard = () => {
       route: "/manage-courses",
     },
     {
-      title: "Manage Subjects",
-      description: "Add, edit or remove subjects",
+      title: userRole === "admin" ? "Manage Subjects" : "View Subjects",
+      // description: "Add, edit or remove subjects",
+      description: userRole === "admin"
+    ? "Add, edit or remove subjects" : "View subjects information",
       icon: FaBook,
       iconColor: "bg-orange-500",
       hoverColor: "hover:bg-orange-50",
       route: "/manage-subjects",
     },
     {
-      title: "Manage Rooms",
-      description: "Configure room availability",
+      title: userRole === "admin" ? "Manage Rooms" : "View Rooms",
+      // description: "Configure room availability",
+      description: userRole === "admin"
+    ? "Configure room availability" : "View room availability",
       icon: FaDoorOpen,
       iconColor: "bg-purple-500",
       hoverColor: "hover:bg-purple-50",
       route: "/manage-rooms",
     },
     {
-      title: "Manage Faculty",
-      description: "Handle faculty information",
+      title: userRole === "admin" ? "Manage Faculty" : "View Faculty",
+      // description: "Handle faculty information",
+      description: userRole === "admin"
+    ? "Handle faculty information" : "View faculty information",
       icon: FaUserTie,
       iconColor: "bg-indigo-500",
       hoverColor: "hover:bg-indigo-50",
       route: "/manage-faculty",
     },
     {
-      title: "Manage Batches",
-      description: "Organize batch details and schedules",
+      title: userRole === "admin" ? "Manage Batches" : "View Batches",
+      // description: "Organize batch details and schedules",
+      description: userRole === "admin"
+    ? "Organize batch details and schedules" : "View batch details and schedules",
       icon: FaLayerGroup,
       iconColor: "bg-green-500",
       hoverColor: "hover:bg-green-50",

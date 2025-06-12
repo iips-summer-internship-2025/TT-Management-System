@@ -229,10 +229,10 @@ const ManageFaculty = () => {
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <Heading text="Manage Faculty" />
-            <p className="text-slate-600 mt-2 text-sm sm:text-base">
-              Add, edit, and manage faculty members
-            </p>
+             <Heading text={userRole === "admin" ? "Manage Faculty" : "View Faculty"} />
+      <p className="text-slate-600 mt-2 text-sm sm:text-base">
+        {userRole === "admin" ? "Add, edit, and manage faculty members" : "View faculty members"}
+      </p>
           </div>
           <button
             onClick={() => navigate("/dashboard")}

@@ -228,11 +228,11 @@ const ManageRooms = () => {
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <Heading text="Manage Rooms" />
-            <p className="text-slate-600 mt-2 text-sm sm:text-base">
-              Add, edit, and manage rooms and their capacities
-            </p>
-          </div>
+            <Heading text={userRole === "admin" ? "Manage Rooms" : "View Rooms "} />
+      <p className="text-slate-600 mt-2 text-sm sm:text-base">
+        {userRole === "admin" ? "Add, edit, and manage room capacities" : "View rooms and their capacities"}
+      </p>
+    </div>
           <button
             onClick={() => navigate("/dashboard")}
             className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
