@@ -10,6 +10,7 @@ import {
   FaUserTie, FaSpinner, FaExclamationTriangle,
   FaLayerGroup,
 } from "react-icons/fa";
+import { SiBasicattentiontoken } from "react-icons/si";
 import { FaTableCells } from "react-icons/fa6";
 
 const Dashboard = () => {
@@ -66,19 +67,19 @@ const Dashboard = () => {
     const initializeDashboard = async () => {
       try {
         setLoading(true);
-        
+
         // Check authentication first
         const isAuth = await checkAuthentication();
-        
+
         if (!isAuth) {
           return; // Exit early if not authenticated
         }
 
         setIsAuthenticated(true);
-        
+
         // Proceed with fetching dashboard data
         await fetchCounts();
-        
+
       } catch (error) {
         console.error('Dashboard initialization failed:', error);
         setError('Failed to initialize dashboard. Please try again.');
@@ -92,7 +93,7 @@ const Dashboard = () => {
   const fetchCounts = async () => {
     try {
       setError(null);
-      
+
       // Fetch all counts in parallel, including credentials (cookies)
       const responses = await Promise.all([
         fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
@@ -194,8 +195,16 @@ const Dashboard = () => {
       route: "/create-timetable",
     },
     {
-      title: "View Tables",
-      description: "View existing timetables",
+      title: "Mark Attendence",
+      description: "Mark the daily attendence",
+      icon: SiBasicattentiontoken,
+      iconColor: "bg-red-500",
+      hoverColor: "hover:bg-red-50",
+      route: "/attencendance",
+    },
+    {
+      title: "View Calander",
+      description: "View timetable calander",
       icon: FaTableCells,
       iconColor: "bg-emerald-500",
       hoverColor: "hover:bg-emerald-50",
