@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 	"log"
 	"os"
+	"tms-server/controllers"
 	"tms-server/config"
 	"tms-server/migrations"
 	"tms-server/routes"
@@ -31,6 +33,11 @@ func main() {
 	r := gin.Default()
 	routes.RegisterRoutes(r)
 
+	//added cron job
+	c := cron.New()
+		c.AddFunc("45 23 * * *", controllers.LoadNextDaySessions) // runs daily at 11:45 PM
+		c.Start()
+	
 	port := os.Getenv("APP_PORT")
 	r.Run(":" + port)
 }
