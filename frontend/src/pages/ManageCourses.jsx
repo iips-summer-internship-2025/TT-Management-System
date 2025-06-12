@@ -376,7 +376,7 @@ const ManageCourses = () => {
                 />
               </div>
 
-              {userRole === "Faculty" && (
+              {userRole === "admin" && (
                 <button
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
                   onClick={handleAddNewCourse}
@@ -393,15 +393,17 @@ const ManageCourses = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-800 text-white">
-                  <th className="px-6 py-4 text-left font-semibold">
+                  <th className="px-6 py-4 text-left font-semibold w-1/2">
                     Course Code
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
+                  <th className="px-6 py-4 text-left font-semibold w-1/4">
                     Course Name
                   </th>
-                  <th className="px-6 py-4 text-center font-semibold">
+                   {userRole === "admin" && (
+                  <th className="px-6 py-4 text-center font-semibold w-1/4">
                     Actions
                   </th>
+                   )}
                 </tr>
               </thead>
               <tbody>
@@ -410,19 +412,20 @@ const ManageCourses = () => {
                     key={`desktop-${course.ID}`}
                     className="hover:bg-blue-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 w-1/2">
                       <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
                         {course.Code}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4  w-1/4">
                       <div className="font-medium text-slate-800">
                         {course.Name}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    {userRole == "admin" && (
+                    <td className="px-6 py-4 w-1/4">
                       <div className="flex justify-center space-x-2">
-                        {userRole == "admin" && (
+                       
                           <>
                             <button
                               className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
@@ -439,9 +442,9 @@ const ManageCourses = () => {
                               <FaTrash className="text-sm" />
                             </button>
                           </>
-                        )}
                       </div>
                     </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -459,6 +462,7 @@ const ManageCourses = () => {
                   <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
                     {course.Code}
                   </span>
+                  {userRole === "admin" && (
                   <div className="flex space-x-2">
                     <button
                       className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
@@ -473,6 +477,7 @@ const ManageCourses = () => {
                       <FaTrash className="text-sm" />
                     </button>
                   </div>
+                   )}
                 </div>
                 <div className="font-medium text-slate-800 mb-1">
                   {course.Name}

@@ -161,6 +161,7 @@ const ManageSubjects = () => {
       setAddingSubject(false);
     }
   };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this subject?")) {
       return;
@@ -193,7 +194,7 @@ const ManageSubjects = () => {
     const subjectToEdit = subjects.find((subject) => subject.id === id);
     if (subjectToEdit) {
       setNewSubject({
-        id: subjectToEdit.id, // Add the id to newSubject state
+        id: subjectToEdit.id,
         name: subjectToEdit.name,
         code: subjectToEdit.code,
         course_code: subjectToEdit.course_code,
@@ -202,6 +203,7 @@ const ManageSubjects = () => {
       setShowAddDialog(true);
     }
   };
+
   const handleAddNewSubject = () => {
     setNewSubject({ name: "", code: "", course_code: "", course_id: "" });
     setShowAddDialog(true);
@@ -316,16 +318,20 @@ const ManageSubjects = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-800 text-white">
-                  <th className="px-6 py-4 text-left font-semibold">
+                  <th className="px-6 py-4 text-left font-semibold w-1/4">
                     Subject Code
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
+                  <th className="px-6 py-4 text-left font-semibold w-1/3">
                     Subject Name
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">Course</th>
-                  <th className="px-6 py-4 text-center font-semibold">
-                    Actions
+                  <th className="px-6 py-4 text-left font-semibold w-1/3">
+                    Course
                   </th>
+                  {userRole === "admin" && (
+                    <th className="px-6 py-4 text-center font-semibold w-1/6">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -334,43 +340,41 @@ const ManageSubjects = () => {
                     key={`desktop-${subject.id}`}
                     className="hover:bg-blue-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 w-1/4">
                       <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
                         {subject.code}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 w-1/3">
                       <div className="font-medium text-slate-800">
                         {subject.name}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 w-1/3">
                       <div className="text-slate-600">
                         {getCoursesDisplay(subject)}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center space-x-2">
-                        {userRole === "admin" && (
-                          <>
-                            <button
-                              className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
-                              onClick={() => handleEdit(subject.id)}
-                              title="Edit Subject"
-                            >
-                              <FaEdit className="text-sm" />
-                            </button>
-                            <button
-                              className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
-                              onClick={() => handleDelete(subject.id)}
-                              title="Delete Subject"
-                            >
-                              <FaTrash className="text-sm" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    {userRole === "admin" && (
+                      <td className="px-6 py-4 w-1/6">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                            onClick={() => handleEdit(subject.id)}
+                            title="Edit Subject"
+                          >
+                            <FaEdit className="text-sm" />
+                          </button>
+                          <button
+                            className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                            onClick={() => handleDelete(subject.id)}
+                            title="Delete Subject"
+                          >
+                            <FaTrash className="text-sm" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

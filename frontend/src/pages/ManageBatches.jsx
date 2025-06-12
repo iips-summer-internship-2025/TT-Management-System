@@ -78,7 +78,7 @@ const ManageBatches = () => {
 
       const formattedBatches = batchesData.map((batch) => ({
         id: batch.ID,
-        year: batch.Year.toString(), // Store as string in frontend
+        year: batch.Year.toString(),
         section: batch.Section,
         course_id: batch.CourseID,
       }));
@@ -128,7 +128,6 @@ const ManageBatches = () => {
       return;
     }
 
-    // Validate year is a valid number
     const yearNumber = parseInt(newBatch.year.trim());
     if (isNaN(yearNumber)) {
       alert("Please enter a valid year (numbers only)");
@@ -139,7 +138,7 @@ const ManageBatches = () => {
       setAddingBatch(true);
 
       const batchData = {
-        Year: yearNumber, // Convert to number for backend
+        Year: yearNumber,
         Section: newBatch.section.trim().toUpperCase(),
         CourseID: Number(newBatch.course_id),
       };
@@ -207,7 +206,7 @@ const ManageBatches = () => {
     if (batchToEdit) {
       setNewBatch({
         id: batchToEdit.id,
-        year: batchToEdit.year.toString(), // Ensure year is string
+        year: batchToEdit.year.toString(),
         section: batchToEdit.section,
         course_id: batchToEdit.course_id,
       });
@@ -330,14 +329,12 @@ const ManageBatches = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-800 text-white">
-                  <th className="px-6 py-4 text-left font-semibold">Year</th>
-                  <th className="px-6 py-4 text-left font-semibold">Section</th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Course ID
-                  </th>
-                  <th className="px-6 py-4 text-center font-semibold">
-                    Actions
-                  </th>
+                  <th className={`px-6 py-4 text-left font-semibold ${userRole === 'admin' ? 'w-1/4' : 'w-1/3'}`}>Year</th>
+                  <th className={`px-6 py-4 text-left font-semibold ${userRole === 'admin' ? 'w-1/4' : 'w-1/3'}`}>Section</th>
+                  <th className={`px-6 py-4 text-left font-semibold ${userRole === 'admin' ? 'w-1/4' : 'w-1/3'}`}>Course ID</th>
+                  {userRole === "admin" && (
+                    <th className="px-6 py-4 text-center font-semibold w-1/4">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -346,32 +343,29 @@ const ManageBatches = () => {
                     key={`desktop-${batch.id}`}
                     className="hover:bg-blue-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4">{batch.year}</td>
-                    <td className="px-6 py-4">{batch.section}</td>
-                    <td className="px-6 py-4">{getCoursesDisplay(batch)}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center space-x-2">
-                        {userRole === "admin" && (
-                          <>
-                            <button
-                              className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
-                              onClick={() => handleEdit(batch.id)}
-                              title="Edit Batch"
-                            >
-                              <FaEdit className="text-sm" />
-                            </button>
-
-                            <button
-                              className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
-                              onClick={() => handleDelete(batch.id)}
-                              title="Delete Batch"
-                            >
-                              <FaTrash className="text-sm" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    <td className={`px-6 py-4 ${userRole === 'admin' ? 'w-1/4' : 'w-1/3'}`}>{batch.year}</td>
+                    <td className={`px-6 py-4 ${userRole === 'admin' ? 'w-1/4' : 'w-1/3'}`}>{batch.section}</td>
+                    <td className={`px-6 py-4 ${userRole === 'admin' ? 'w-1/4' : 'w-1/3'}`}>{getCoursesDisplay(batch)}</td>
+                    {userRole === "admin" && (
+                      <td className="px-6 py-4 w-1/4">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
+                            onClick={() => handleEdit(batch.id)}
+                            title="Edit Batch"
+                          >
+                            <FaEdit className="text-sm" />
+                          </button>
+                          <button
+                            className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
+                            onClick={() => handleDelete(batch.id)}
+                            title="Delete Batch"
+                          >
+                            <FaTrash className="text-sm" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -389,20 +383,22 @@ const ManageBatches = () => {
                   <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
                     {batch.id}
                   </span>
-                  <div className="flex space-x-2">
-                    <button
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
-                      onClick={() => handleEdit(batch.id)}
-                    >
-                      <FaEdit className="text-sm" />
-                    </button>
-                    <button
-                      className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
-                      onClick={() => handleDelete(batch.id)}
-                    >
-                      <FaTrash className="text-sm" />
-                    </button>
-                  </div>
+                  {userRole === "admin" && (
+                    <div className="flex space-x-2">
+                      <button
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg"
+                        onClick={() => handleEdit(batch.id)}
+                      >
+                        <FaEdit className="text-sm" />
+                      </button>
+                      <button
+                        className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg"
+                        onClick={() => handleDelete(batch.id)}
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="font-medium text-slate-800 mb-1">
                   Year: {batch.year}
@@ -411,7 +407,7 @@ const ManageBatches = () => {
                   Section: {batch.section}
                 </div>
                 <div className="text-sm text-slate-600">
-                  Course ID: {batch.course_id}
+                  Course ID: {getCoursesDisplay(batch)}
                 </div>
               </div>
             ))}
@@ -429,7 +425,7 @@ const ManageBatches = () => {
                   ? "Try a different search term"
                   : "Get started by adding your first batch."}
               </p>
-              {!searchTerm && (
+              {!searchTerm && userRole === "admin" && (
                 <button
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center space-x-2 mx-auto shadow-sm font-medium"
                   onClick={handleAddNewBatch}
@@ -474,7 +470,6 @@ const ManageBatches = () => {
                   type="text"
                   value={newBatch.year}
                   onChange={(e) => {
-                    // Only allow numbers
                     const value = e.target.value;
                     setNewBatch((prev) => ({ ...prev, year: value }));
                   }}

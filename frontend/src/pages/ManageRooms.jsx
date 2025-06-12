@@ -290,15 +290,17 @@ const ManageRooms = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-800 text-white">
-                  <th className="px-6 py-4 text-left font-semibold">
+                  <th className="px-6 py-4 text-left font-semibold w-1/2">
                     Room Name
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
+                  <th className="px-6 py-4 text-left font-semibold w-1/4">
                     Capacity
                   </th>
-                  <th className="px-6 py-4 text-center font-semibold">
-                    Actions
-                  </th>
+                  {userRole === "admin" && (
+                    <th className="px-6 py-4 text-center font-semibold w-1/4">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -307,38 +309,36 @@ const ManageRooms = () => {
                     key={`desktop-${room.ID}`}
                     className="hover:bg-blue-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 w-1/2">
                       <div className="font-medium text-slate-800">
                         {room.Name}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 w-1/4">
                       <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
                         {room.Capacity} seats
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center space-x-2">
-                        {userRole === "admin" && (
-                          <>
-                            <button
-                              className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
-                              onClick={() => handleEdit(room)}
-                              title="Edit Room"
-                            >
-                              <FaEdit className="text-sm" />
-                            </button>
-                            <button
-                              className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
-                              onClick={() => handleDelete(room.ID)}
-                              title="Delete Room"
-                            >
-                              <FaTrash className="text-sm" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    {userRole === "admin" && (
+                      <td className="px-6 py-4 w-1/4">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                            onClick={() => handleEdit(room)}
+                            title="Edit Room"
+                          >
+                            <FaEdit className="text-sm" />
+                          </button>
+                          <button
+                            className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                            onClick={() => handleDelete(room.ID)}
+                            title="Delete Room"
+                          >
+                            <FaTrash className="text-sm" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -354,20 +354,22 @@ const ManageRooms = () => {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="font-medium text-slate-800">{room.Name}</div>
-                  <div className="flex space-x-2">
-                    <button
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
-                      onClick={() => handleEdit(room)}
-                    >
-                      <FaEdit className="text-sm" />
-                    </button>
-                    <button
-                      className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
-                      onClick={() => handleDelete(room.ID)}
-                    >
-                      <FaTrash className="text-sm" />
-                    </button>
-                  </div>
+                  {userRole === "admin" && (
+                    <div className="flex space-x-2">
+                      <button
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
+                        onClick={() => handleEdit(room)}
+                      >
+                        <FaEdit className="text-sm" />
+                      </button>
+                      <button
+                        className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
+                        onClick={() => handleDelete(room.ID)}
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="text-sm text-slate-600">
                   <span>{room.Capacity} seats</span>
@@ -388,7 +390,7 @@ const ManageRooms = () => {
                   ? "Try a different search term"
                   : "Get started by adding your first room."}
               </p>
-              {!searchTerm && (
+              {!searchTerm && userRole === "admin" && (
                 <button
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center space-x-2 mx-auto shadow-sm font-medium"
                   onClick={handleAddNewRoom}

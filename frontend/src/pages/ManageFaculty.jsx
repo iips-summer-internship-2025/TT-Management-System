@@ -274,7 +274,7 @@ const ManageFaculty = () => {
                   className="pl-10 w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                 />
               </div>
-              {userRole === "Faculty" && (
+              {userRole === "admin" && (
                 <button
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
                   onClick={handleAddNewFaculty}
@@ -294,9 +294,11 @@ const ManageFaculty = () => {
                   <th className="px-6 py-4 text-left font-semibold">
                     Faculty Name
                   </th>
-                  <th className="px-6 py-4 text-center font-semibold">
-                    Actions
-                  </th>
+                  {userRole === "admin" && (
+                    <th className="px-6 py-4 text-center font-semibold">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -310,32 +312,26 @@ const ManageFaculty = () => {
                         {faculty.Name}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center space-x-2">
-                        <button
-                          className={`bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm ${
-                            userRole === "user"
-                              ? "pointer-events-none opacity-50"
-                              : ""
-                          }`}
-                          onClick={() => handleEdit(faculty)}
-                          title="Edit Faculty"
-                        >
-                          <FaEdit className="text-sm" />
-                        </button>
-                        <button
-                          className={`bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm ${
-                            userRole === "user"
-                              ? "pointer-events-none opacity-50"
-                              : ""
-                          }`}
-                          onClick={() => handleDelete(faculty.ID)}
-                          title="Delete Faculty"
-                        >
-                          <FaTrash className="text-sm" />
-                        </button>
-                      </div>
-                    </td>
+                    {userRole === "admin" && (
+                      <td className="px-6 py-4">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                            onClick={() => handleEdit(faculty)}
+                            title="Edit Faculty"
+                          >
+                            <FaEdit className="text-sm" />
+                          </button>
+                          <button
+                            className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+                            onClick={() => handleDelete(faculty.ID)}
+                            title="Delete Faculty"
+                          >
+                            <FaTrash className="text-sm" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -353,24 +349,22 @@ const ManageFaculty = () => {
                   <div className="font-medium text-slate-800">
                     {faculty.Name}
                   </div>
-                  <div className="flex space-x-2">
-                    {userRole === "admin" && (
-                      <>
-                        <button
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
-                          onClick={() => handleEdit(faculty)}
-                        >
-                          <FaEdit className="text-sm" />
-                        </button>
-                        <button
-                          className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
-                          onClick={() => handleDelete(faculty.ID)}
-                        >
-                          <FaTrash className="text-sm" />
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  {userRole === "admin" && (
+                    <div className="flex space-x-2">
+                      <button
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
+                        onClick={() => handleEdit(faculty)}
+                      >
+                        <FaEdit className="text-sm" />
+                      </button>
+                      <button
+                        className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors duration-200"
+                        onClick={() => handleDelete(faculty.ID)}
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -390,7 +384,7 @@ const ManageFaculty = () => {
                   ? "Try a different search term"
                   : "Get started by adding your first faculty member."}
               </p>
-              {!searchTerm && (
+              {!searchTerm && userRole === "admin" && (
                 <button
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-lg transition-all duration-200 flex items-center space-x-2 mx-auto shadow-sm font-medium"
                   onClick={handleAddNewFaculty}
