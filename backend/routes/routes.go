@@ -12,6 +12,7 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	r.Use(middleware.CORSMiddleware())
 
+	role := middleware.RoleAuthMiddleware
 	db := config.DB
 	api := r.Group("/api/v1")
 	{
@@ -63,7 +64,7 @@ func RegisterRoutes(r *gin.Engine) {
 		}
 		user := api.Group("/user")
 		{
-			user.GET("", controllers.All[models.User](db))
+			user.GET("", role("superadmin"), controllers.All[models.User](db))
 			user.POST("", controllers.Create[models.User](db))
 			user.GET("/:id", controllers.Get[models.User](db))
 			user.PUT("/:id", controllers.Update[models.User](db))

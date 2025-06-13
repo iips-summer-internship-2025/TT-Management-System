@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"tms-server/models"
 	"tms-server/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Ping(c *gin.Context) {
@@ -24,7 +25,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.Username)
+	token, err := utils.GenerateToken(user.Username, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
@@ -32,14 +33,18 @@ func Login(c *gin.Context) {
 
 	c.SetCookie(
 		"auth_token", token,
-		604800, // expires in 7 days (604800 seconds)
+		int(utils.TokenExpiry.Seconds()), // expires in 7 days (604800 seconds)
 		"/",
 		"",
 		true,
 		true,
 	)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login Successful"})
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "Login Successful",
+		"username": user.Username,
+		"role":     user.Role,
+	})
 }
 
 func Logout(c *gin.Context) {
