@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 	"tms-server/config"
 	"tms-server/models"
@@ -12,8 +13,24 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 	month := c.Query("month")
 	year := c.Query("year")
 	semester := c.Query("semester")
-	courseID := c.Query("course_id")
 	facultyID := c.Query("faculty_id")
+	courseID := c.Query("course_id")
+
+	if month == "" || year == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Both 'month' and 'year' query parameters are required.",
+		})
+		return
+	}
+
+	if _, err := strconv.Atoi(month); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'month' parameter. Must be a number."})
+		return
+	}
+	if _, err := strconv.Atoi(year); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'year' parameter. Must be a number."})
+		return
+	}
 
 	query := config.DB.Model(&models.Session{}).
 		Joins("JOIN lectures ON lectures.id = sessions.lecture_id").
@@ -24,17 +41,24 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 	if semester != "" {
 		query = query.Where("lectures.semester = ?", semester)
 	}
-	if courseID != "" {
-		query = query.Where("lectures.subject_id = ?", courseID)
-	}
 	if facultyID != "" {
 		query = query.Where("lectures.faculty_id = ?", facultyID)
+	}
+	if courseID != "" {
+		query = query.
+			Joins("JOIN batches ON batches.id = lectures.batch_id").
+			Where("batches.course_id = ?", courseID)
 	}
 
 	var sessions []models.Session
 	err := query.Preload("Lecture").Find(&sessions).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetching sessions"})
+		return
+	}
+
+	if len(sessions) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "no sessions found", "data": []gin.H{}})
 		return
 	}
 
@@ -74,8 +98,8 @@ func GetCalendarSummaryByMonth(c *gin.Context) {
 func GetLectureDetailsByDate(c *gin.Context) {
 	dateStr := c.Query("date")
 	semester := c.Query("semester")
-	courseID := c.Query("course_id")
 	facultyID := c.Query("faculty_id")
+	courseID := c.Query("course_id")
 
 	if dateStr == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "date is required in YYYY-MM-DD format"})
@@ -109,14 +133,14 @@ func GetLectureDetailsByDate(c *gin.Context) {
 		Preload("Faculty").
 		Preload("Room").
 		Preload("Batch.Course").
-		Where("id IN ?", lectureIDs)
+		Where("lectures.id IN ?", lectureIDs)
 
 	// Optional Filters (faculty_id, course_id, semester)
 	if semester != "" {
-		lectureQuery = lectureQuery.Where("semester = ?", semester)
+		lectureQuery = lectureQuery.Where("lectures.semester = ?", semester)
 	}
 	if facultyID != "" {
-		lectureQuery = lectureQuery.Where("faculty_id = ?", facultyID)
+		lectureQuery = lectureQuery.Where("lectures.faculty_id = ?", facultyID)
 	}
 	if courseID != "" {
 		lectureQuery = lectureQuery.
@@ -127,6 +151,11 @@ func GetLectureDetailsByDate(c *gin.Context) {
 	var lectures []models.Lecture
 	if err := lectureQuery.Find(&lectures).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch lecture details"})
+		return
+	}
+
+	if len(lectures) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "no lectures found", "data": []gin.H{}})
 		return
 	}
 
@@ -153,6 +182,7 @@ func GetLectureDetailsByDate(c *gin.Context) {
 			"batch_year":    lecture.Batch.Year,
 			"batch_section": lecture.Batch.Section,
 			"course_name":   lecture.Batch.Course.Name,
+			"session_id":   s.ID,
 		})
 	}
 

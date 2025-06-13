@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
@@ -11,8 +10,8 @@ import {
   FaUserTie, FaSpinner, FaExclamationTriangle,
   FaLayerGroup,
 } from "react-icons/fa";
+import { SiBasicattentiontoken } from "react-icons/si";
 import { FaTableCells } from "react-icons/fa6";
-import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -68,19 +67,19 @@ const Dashboard = () => {
     const initializeDashboard = async () => {
       try {
         setLoading(true);
-        
+
         // Check authentication first
         const isAuth = await checkAuthentication();
-        
+
         if (!isAuth) {
           return; // Exit early if not authenticated
         }
 
         setIsAuthenticated(true);
-        
+
         // Proceed with fetching dashboard data
         await fetchCounts();
-        
+
       } catch (error) {
         console.error('Dashboard initialization failed:', error);
         setError('Failed to initialize dashboard. Please try again.');
@@ -94,7 +93,7 @@ const Dashboard = () => {
   const fetchCounts = async () => {
     try {
       setError(null);
-      
+
       // Fetch all counts in parallel, including credentials (cookies)
       const responses = await Promise.all([
         fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
@@ -155,8 +154,6 @@ const Dashboard = () => {
     }
   };
 
-  const { logout } = useAuth();
-
   const statsCards = [
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.faculties,
@@ -198,8 +195,16 @@ const Dashboard = () => {
       route: "/create-timetable",
     },
     {
-      title: "View Tables",
-      description: "View existing timetables",
+      title: "Mark Attendence",
+      description: "Mark the daily attendence",
+      icon: SiBasicattentiontoken,
+      iconColor: "bg-red-500",
+      hoverColor: "hover:bg-red-50",
+      route: "/attencendance",
+    },
+    {
+      title: "View Calander",
+      description: "View timetable calander",
       icon: FaTableCells,
       iconColor: "bg-emerald-500",
       hoverColor: "hover:bg-emerald-50",
@@ -269,8 +274,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <NavBar onLogout={logout} />
-
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
         <Heading text="Admin Dashboard" />

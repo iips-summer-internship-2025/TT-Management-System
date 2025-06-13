@@ -18,9 +18,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Plus, Edit, Trash2, Save, RefreshCw, Trash } from "lucide-react";
-import NavBar from "../components/NavBar";
 import academicData from "../assets/academicData.json";
-import { useAuth } from '../context/AuthContext';
 
 const CreateTable = () => {
   const [gridData, setGridData] = useState({});
@@ -39,7 +37,6 @@ const CreateTable = () => {
   const [newTimeSlot, setNewTimeSlot] = useState("");
   const [editTimeSlotDialog, setEditTimeSlotDialog] = useState(false);
   const [editingTimeSlot, setEditingTimeSlot] = useState({ index: -1, value: "" });
-  const { logout } = useAuth();
 
   // New state variables for timetable management
   const [timetableState, setTimetableState] = useState({
@@ -281,7 +278,7 @@ const CreateTable = () => {
 
         const filteredLectures = allLectures.filter(lecture =>
           lecture.BatchID === selectedBatch.ID &&
-          lecture.SemesterID === semesterNumber
+          lecture.Semester === semesterNumber
         );
 
         console.log('Filtered lectures for batch:', selectedBatch.ID, 'semester:', semesterNumber, filteredLectures);
@@ -385,7 +382,7 @@ const CreateTable = () => {
         const allLectures = await getAllResponse.json();
         existingLectures = allLectures.filter(lecture =>
           lecture.BatchID === selectedBatch.ID &&
-          lecture.SemesterID === semesterNumber
+          lecture.Semester === semesterNumber
         );
       }
 
@@ -416,7 +413,7 @@ const CreateTable = () => {
                 SubjectID: subject.ID,
                 FacultyID: faculty.ID,
                 BatchID: selectedBatch.ID,
-                SemesterID: semesterNumber,
+                Semester: semesterNumber,
                 RoomID: room?.ID || 1
               }
             };
@@ -480,7 +477,7 @@ const CreateTable = () => {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
-            },
+            },credentials: 'include',
             body: JSON.stringify({
               DayOfWeek: lecture.DayOfWeek,
               StartTime: lecture.StartTime,
@@ -488,7 +485,7 @@ const CreateTable = () => {
               SubjectID: lecture.SubjectID,
               FacultyID: lecture.FacultyID,
               BatchID: lecture.BatchID,
-              SemesterID: lecture.SemesterID,
+              Semester: lecture.Semester,
               RoomID: lecture.RoomID
             })
           })
@@ -551,7 +548,8 @@ const CreateTable = () => {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
-            }
+            },
+            credentials: 'include', // Include credentials for CORS requests
           })
         );
 
@@ -908,7 +906,6 @@ const CreateTable = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <NavBar onLogout={logout}/>
       {error && (
         <div className="flex justify-center items-center py-8">
           <div className="bg-white rounded-xl shadow-lg p-6 text-center max-w-md mx-4">
@@ -1109,11 +1106,8 @@ const CreateTable = () => {
                     onClick={refresh}
                     disabled={isSaving}
                   >
-                    {isSaving ? (
-                      <RefreshCw size={18} className="animate-spin" />
-                    ) : (
+
                       <RefreshCw size={18} />
-                    )}
                     <span className="hidden sm:inline">ReFresh</span>
                     <span className="sm:hidden "></span>
                   </Button>

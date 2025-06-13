@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"slices"
 	"tms-server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -23,24 +24,34 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("username", claims.Subject)
+		c.Set("username", claims.Username)
+		c.Set("role", claims.Role)
 		c.Next()
 	}
 }
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	// Clear the JWT cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "token", // match the name used in login
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   false, // change to true in production with HTTPS
-		SameSite: http.SameSiteLaxMode,
-		MaxAge:   -1, // immediately expire
-	})
+func RoleAuthMiddleware(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, exists := c.Get("role")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User role not found"})
+			c.Abort()
+			return
+		}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message":"Logged out successfully"}`))
+		roleStr, ok := userRole.(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid role format"})
+			c.Abort()
+			return
+		}
+
+		if slices.Contains(allowedRoles, roleStr) {
+			c.Next()
+			return
+		}
+
+		c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
+		c.Abort()
+	}
 }
