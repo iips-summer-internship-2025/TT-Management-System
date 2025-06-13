@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 import Dashboard from "../pages/Dashboard";
 import CreateTable from "../pages/CreateTable";
-// import UpdateTimeTable from "../pages/UpdateTimeTable";
 import ViewTable from "../pages/ViewTimeTable";
 import Subjects from "../pages/ManageSubjects";
 import Rooms from "../pages/ManageRooms";
@@ -17,6 +16,7 @@ import ManageFaculty from "../pages/ManageFaculty";
 import ManageBatches from "../pages/ManageBatches";
 import SignUpPage from "../pages/SignupPage";
 import AdminApprovalPage from "../pages/AdminApprovalPage";
+import Attendence from "../pages/MarkAttendance";
 
 
 const AppRoutes = () => {
@@ -83,7 +83,7 @@ const AppRoutes = () => {
           //</PrivateRoute>
         }
       />
-      
+
       <Route
         path="/manage-courses"
         element={
@@ -93,7 +93,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="//manage-faculty"
+        path="/manage-faculty"
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <ManageFaculty/>
@@ -109,7 +109,7 @@ const AppRoutes = () => {
         }
       />
 
-      <Route 
+      <Route
         path="/manage-batches"
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
@@ -135,8 +135,16 @@ const AppRoutes = () => {
           //</PrivateRoute>
         }
         />
+      <Route
+        path="/attencendance"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <Attendence/>
+          //</PrivateRoute>
+        }
+        />
     </Routes>
-    
+
   );
 };
 

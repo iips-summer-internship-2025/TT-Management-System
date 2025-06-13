@@ -157,10 +157,6 @@ function ViewTimeTable() {
   const [dayDetails, setDayDetails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [appliedFilters, setAppliedFilters] = useState(false);
-  //use that useState variable attendanceData to store the response which comes from below api
-  //GET /api/v1/calendar?course_id={courseId}&semester={semesterId}&month={month}&year={year}&faculty_id={facultyId}
-  // const [attendanceData, setAttendanceData] = useState(null);
   const modalRef = useRef(null);
 
   // Status change modal states
@@ -470,12 +466,9 @@ function ViewTimeTable() {
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
-    // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-
     return days;
   }, []);
 
@@ -837,7 +830,7 @@ function ViewTimeTable() {
                   <h3 className="text-xl font-semibold">No Classes Scheduled</h3>
                   <p>There is no class data available for this day with the current filters.</p>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -860,6 +853,5 @@ function ViewTimeTable() {
     </div>
   );
 }
-
 
 export default ViewTimeTable;
