@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { FaUser, FaEnvelope, FaUserTag, FaCalendarAlt } from "react-icons/fa";
-import { RiLockPasswordFill } from "react-icons/ri";
 import { CiLogin } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import logo from "..//assets/iips.png";
@@ -8,7 +7,6 @@ import logo from "..//assets/iips.png";
 const SignUpPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -17,7 +15,7 @@ const SignUpPage = () => {
     event.preventDefault();
     // In a real app, you would send this data to your backend
     // await signUp(name, email, password, role);
-    console.log("Sign up attempted with:", { name, email, password, role });
+    console.log("Sign up attempted with:", { name, email, role });
     setSubmitted(true);
   };
 
@@ -123,27 +121,6 @@ const SignUpPage = () => {
                 />
                 <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 max-[680px]:text-sm">
                   <FaEnvelope />
-                </span>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium" htmlFor="password">
-                Password
-              </label>
-              <div className="relative p-2">
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  className="w-full px-6 py-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  placeholder="Create a password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength="6"
-                />
-                <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 max-[680px]:text-sm">
-                  <RiLockPasswordFill />
                 </span>
               </div>
             </div>

@@ -7,7 +7,7 @@ import {
   FaUserTag,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../components/NavBar";
+// import NavBar from "../components/NavBar";
 import { useAuth } from '../context/AuthContext';
 import Heading from "../components/Heading";
 
@@ -64,11 +64,11 @@ const AdminApprovalPage = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <NavBar onLogout={logout} />
+      {/* <NavBar onLogout={logout} /> */}
 
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">

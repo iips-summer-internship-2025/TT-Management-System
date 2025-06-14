@@ -17,6 +17,8 @@ import ManageBatches from "../pages/ManageBatches";
 import SignUpPage from "../pages/SignupPage";
 import AdminApprovalPage from "../pages/AdminApprovalPage";
 import Attendence from "../pages/MarkAttendance";
+import CreatePasswordPage from "../pages/CreatePasswordPage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
 
 
 const AppRoutes = () => {
@@ -135,11 +137,30 @@ const AppRoutes = () => {
           //</PrivateRoute>
         }
         />
+
       <Route
         path="/attencendance"
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <Attendence/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route
+        path="/create-password"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <CreatePasswordPage/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route
+        path="/reset-password"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ResetPasswordPage/>
           //</PrivateRoute>
         }
         />
