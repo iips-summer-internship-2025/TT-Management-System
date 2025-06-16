@@ -12,6 +12,7 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	r.Use(middleware.CORSMiddleware())
 
+	role := middleware.RoleAuthMiddleware
 	db := config.DB
 	api := r.Group("/api/v1")
 	{
@@ -98,6 +99,16 @@ func RegisterRoutes(r *gin.Engine) {
 		{
 			batch.GET("", controllers.All[models.Batch](db))
 			batch.GET("/:id", controllers.Get[models.Batch](db))
+			batch.PUT("/:id", controllers.Update[models.Batch](db))
+			batch.DELETE("/:id", controllers.Delete[models.Batch](db))
+		}
+		user := api.Group("/user")
+		{
+			user.GET("", role("superadmin"), controllers.All[models.User](db))
+			user.POST("", controllers.Create[models.User](db))
+			user.GET("/:id", controllers.Get[models.User](db))
+			user.PUT("/:id", controllers.Update[models.User](db))
+			user.DELETE("/:id", controllers.Delete[models.User](db))
 		}
 
 		lecture := api.Group("/lecture")
@@ -120,7 +131,8 @@ func RegisterRoutes(r *gin.Engine) {
 
 		calendar := api.Group("/calendar")
 		{
-			calendar.GET("/", controllers.GetCalendarSummaryByDate)
+			calendar.GET("", controllers.GetCalendarSummaryByMonth)
+			calendar.GET("/day", controllers.GetLectureDetailsByDate)
 		}
 	}
 }

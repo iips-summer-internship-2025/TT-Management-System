@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import NavBar from "../components/NavBar";
 import Heading from "../components/Heading";
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaGraduationCap, FaSpinner, FaSearch } from "react-icons/fa";
+import { useUserRole } from "../context/UserRoleContext";
 
 const ManageCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -18,7 +18,7 @@ const ManageCourses = () => {
         name: "",
         code: ""
     });
-
+ const { userRole } = useUserRole();
     const navigate = useNavigate();
 
     const API_BASE_URL = "http://localhost:8080/api/v1";
@@ -40,7 +40,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -73,7 +74,8 @@ const ManageCourses = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!coursesResponse.ok) {
@@ -87,11 +89,15 @@ const ManageCourses = () => {
                 coursesData.map(async (course) => {
                     try {
                         // Fetch subjects for this course
-                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`);
+                        const subjectsResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/subjects`, {
+                            credentials: 'include'
+                        });
                         const subjects = subjectsResponse.ok ? await subjectsResponse.json() : [];
                         
                         // Fetch batches for this course
-                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`);
+                        const batchesResponse = await fetch(`${API_BASE_URL}/course/${course.ID}/batches`, {
+                            credentials: 'include'
+                        });
                         const batches = batchesResponse.ok ? await batchesResponse.json() : [];
                         
                         return {
@@ -165,6 +171,7 @@ const ManageCourses = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include credentials for CORS
                 body: JSON.stringify(courseData)
             });
 
@@ -196,7 +203,8 @@ const ManageCourses = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                credentials: 'include' // Include credentials for CORS
             });
 
             if (!response.ok) {
@@ -255,7 +263,6 @@ const ManageCourses = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="flex items-center space-x-3">
                         <FaSpinner className="animate-spin text-blue-500 text-2xl" />
@@ -269,7 +276,6 @@ const ManageCourses = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <NavBar />
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
                         <div className="text-red-500 text-lg mb-4">{error}</div>
@@ -287,16 +293,14 @@ const ManageCourses = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <NavBar />
-
             {/* Header Section */}
             <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <Heading text="Manage Courses" />
-                        <p className="text-slate-600 mt-2 text-sm sm:text-base">
-                            Add, edit, and manage academic courses
-                        </p>
+                        <Heading text={userRole === "admin" ? "Manage Courses" : "View Courses"} />
+      <p className="text-slate-600 mt-2 text-sm sm:text-base">
+        {userRole === "admin" ? "Add, edit, and manage academic courses" : "View academic courses"}
+      </p>
                     </div>
                     <button
                         onClick={() => navigate("/dashboard")}
@@ -323,6 +327,7 @@ const ManageCourses = () => {
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                          {userRole === 'admin' && (
                             <div className="relative w-full sm:w-64">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <FaSearch className="text-gray-400" />
@@ -335,6 +340,8 @@ const ManageCourses = () => {
                                     className="pl-10 w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                                 />
                             </div>
+                          )}
+                            {userRole === "admin" && (
                             <button
                                 className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm font-medium"
                                 onClick={handleAddNewCourse}
@@ -342,6 +349,7 @@ const ManageCourses = () => {
                                 <FaPlus className="text-sm" />
                                 <span>Add Course</span>
                             </button>
+                             )}
                         </div>
                     </div>
 
@@ -350,9 +358,11 @@ const ManageCourses = () => {
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-slate-800 text-white">
-                                    <th className="px-6 py-4 text-left font-semibold">Course Code</th>
-                                    <th className="px-6 py-4 text-left font-semibold">Course Name</th>
-                                    <th className="px-6 py-4 text-center font-semibold">Actions</th>
+                                    <th className="px-6 py-4 text-left font-semibold w-1/2">Course Code</th>
+                                    <th className="px-6 py-4 text-left font-semibold w-1/4">Course Name</th>
+                                     {userRole === "admin" && (
+                                    <th className="px-6 py-4 text-center font-semibold w-1/4">Actions</th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody>
@@ -361,16 +371,18 @@ const ManageCourses = () => {
                                         key={`desktop-${course.ID}`}
                                         className="hover:bg-blue-50 transition-colors duration-150"
                                     >                                        
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 w-1/2">
                                             <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
                                                 {course.Code}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                       <td className="px-6 py-4  w-1/4">
                                             <div className="font-medium text-slate-800">{course.Name}</div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                         {userRole == "admin" && (
+                                        <td className="px-6 py-4 w-1/4">
                                             <div className="flex justify-center space-x-2">
+                                              <>
                                                 <button
                                                     className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
                                                     onClick={() => handleEdit(course)}
@@ -385,8 +397,10 @@ const ManageCourses = () => {
                                                 >
                                                     <FaTrash className="text-sm" />
                                                 </button>
+                                                </>
                                             </div>
                                         </td>
+                                         )}
                                     </tr>
                                 ))}
                             </tbody>
@@ -404,6 +418,7 @@ const ManageCourses = () => {
                                     <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-mono font-medium">
                                         {course.Code}
                                     </span>
+                                     {userRole === "admin" && (
                                     <div className="flex space-x-2">
                                         <button
                                             className="bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-lg transition-colors duration-200"
@@ -418,6 +433,7 @@ const ManageCourses = () => {
                                             <FaTrash className="text-sm" />
                                         </button>
                                     </div>
+                                     )}
                                 </div>
                                 <div className="font-medium text-slate-800 mb-1">{course.Name}</div>
                             </div>

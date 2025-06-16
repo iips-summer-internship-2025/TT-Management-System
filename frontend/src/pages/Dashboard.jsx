@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import Heading from "../components/Heading";
 import { MdGroups } from "react-icons/md";
@@ -11,19 +10,22 @@ import {
   FaUserTie, FaSpinner, FaExclamationTriangle,
   FaLayerGroup,
 } from "react-icons/fa";
+import { SiBasicattentiontoken } from "react-icons/si";
 import { FaTableCells } from "react-icons/fa6";
-import { useAuth } from '../context/AuthContext';
+import { useUserRole } from "../context/UserRoleContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [counts, setCounts] = useState({
     faculties: 0,
     subjects: 0,
     rooms: 0,
     courses: 0
   });
+    const { userRole } = useUserRole();
 
   const API_BASE_URL = "http://localhost:8080/api/v1";
   const API_ENDPOINTS = {
@@ -33,78 +35,126 @@ const Dashboard = () => {
     COURSE_COUNT: `${API_BASE_URL}/course`
   };
 
+  // Function To Check Authentication
+  const checkAuthentication = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.FACULTY_COUNT, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        console.log('Authentication failed - no valid cookie');
+        navigate('/');
+        return false;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return true;
+
+    } catch (error) {
+      console.error('Authentication check failed:', error);
+      navigate('/');
+      return false;
+    }
+  };
+
   useEffect(() => {
-    const fetchCounts = async () => {
+    const initializeDashboard = async () => {
       try {
         setLoading(true);
-        setError(null);
-        // Fetch all counts in parallel, including credentials (cookies)
-        const responses = await Promise.all([
-          fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
-          fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
-        ]);
 
-        // Check for errors
-        for (const response of responses) {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+        // Check authentication first
+        const isAuth = await checkAuthentication();
+
+        if (!isAuth) {
+          return; // Exit early if not authenticated
         }
 
-        // Parse all responses
-        const [facultyData, subjectData, roomData, courseData] = await Promise.all([
-          responses[0].json(),
-          responses[1].json(),
-          responses[2].json(),
-          responses[3].json()
-        ]);
+        setIsAuthenticated(true);
 
-        // console.log('Fetched data:', { facultyData, subjectData, roomData, courseData });
+        // Proceed with fetching dashboard data
+        await fetchCounts();
 
-        // Handle both array responses and object responses with count property
-        const getCount = (data) => {
-          if (Array.isArray(data)) {
-            return data.length;
-          } else if (data && typeof data === 'object') {
-            return data.count || data.total || data.length || 0;
-          }
-          return 0;
-        };
-
-        setCounts({
-          faculties: getCount(facultyData),
-          subjects: getCount(subjectData),
-          rooms: getCount(roomData),
-          courses: getCount(courseData)
-        });
-
-        // console.log("Final counts:", {
-        //   faculties: getCount(facultyData),
-        //   subjects: getCount(subjectData), 
-        //   rooms: getCount(roomData),
-        //   courses: getCount(courseData)
-        // });
-
-      } catch (err) {
-        console.error('Error fetching counts:', err);
-        setError('Failed to load dashboard data. Please check your connection and try again.');
-        // Set default values on error
-        setCounts({
-          faculties: 0,
-          subjects: 0,
-          rooms: 0,
-          courses: 0
-        });
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error('Dashboard initialization failed:', error);
+        setError('Failed to initialize dashboard. Please try again.');
+        navigate('/');
       }
     };
 
-    fetchCounts();
-  }, []);
-  const { logout } = useAuth();
+    initializeDashboard();
+  }, [navigate]);
+
+  const fetchCounts = async () => {
+    try {
+      setError(null);
+
+      // Fetch all counts in parallel, including credentials (cookies)
+      const responses = await Promise.all([
+        fetch(API_ENDPOINTS.FACULTY_COUNT, { credentials: "include" }),
+        fetch(API_ENDPOINTS.SUBJECT_COUNT, { credentials: "include" }),
+        fetch(API_ENDPOINTS.ROOM_COUNT, { credentials: "include" }),
+        fetch(API_ENDPOINTS.COURSE_COUNT, { credentials: "include" })
+      ]);
+
+      // Check for authentication errors in responses
+      for (const response of responses) {
+        if (response.status === 401 || response.status === 403) {
+          console.log('Authentication failed during data fetch, redirecting to login');
+          navigate('/');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      }
+
+      // Parse all responses
+      const [facultyData, subjectData, roomData, courseData] = await Promise.all([
+        responses[0].json(),
+        responses[1].json(),
+        responses[2].json(),
+        responses[3].json()
+      ]);
+
+      // Handle both array responses and object responses with count property
+      const getCount = (data) => {
+        if (Array.isArray(data)) {
+          return data.length;
+        } else if (data && typeof data === 'object') {
+          return data.count || data.total || data.length || 0;
+        }
+        return 0;
+      };
+
+      setCounts({
+        faculties: getCount(facultyData),
+        subjects: getCount(subjectData),
+        rooms: getCount(roomData),
+        courses: getCount(courseData)
+      });
+
+    } catch (err) {
+      console.error('Error fetching counts:', err);
+      setError('Failed to load dashboard data. Please check your connection and try again.');
+      // Set default values on error
+      setCounts({
+        faculties: 0,
+        subjects: 0,
+        rooms: 0,
+        courses: 0
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statsCards = [
     {
@@ -112,7 +162,7 @@ const Dashboard = () => {
       title: "Faculty Members",
       icon: MdGroups,
       iconColor: "bg-emerald-500",
-      // bgGradient: "from-emerald-50 to-emerald-100",
+      bgGradient: "from-emerald-50 to-emerald-100",
     },
     {
       heading: loading ? <FaSpinner className="animate-spin" /> : counts.subjects,
@@ -147,49 +197,62 @@ const Dashboard = () => {
       route: "/create-timetable",
     },
     {
-      title: "View Tables",
-      description: "View existing timetables",
+      title: "Mark Attendence",
+      description: "Mark the daily attendence",
+      icon: SiBasicattentiontoken,
+      iconColor: "bg-red-500",
+      hoverColor: "hover:bg-red-50",
+      route: "/attencendance",
+    },
+    {
+      title: "View Calender",
+      description: "View timetable calender",
       icon: FaTableCells,
       iconColor: "bg-emerald-500",
       hoverColor: "hover:bg-emerald-50",
       route: "/view-timetable",
     },
     {
-      title: "Manage Courses",
-      description: "View existing courses",
+      title: userRole === "admin" ? "Manage Courses" : "View Courses",
+      description: userRole === "admin"
+    ? "Add, edit or remove Courses" : "View existing courses",
       icon: FaEdit,
       iconColor: "bg-amber-500",
       hoverColor: "hover:bg-amber-50",
       route: "/manage-courses",
     },
     {
-      title: "Manage Subjects",
-      description: "Add, edit or remove subjects",
+      title: userRole === "admin" ? "Manage Subjects" : "View Subjects",
+      description: userRole === "admin"
+    ? "Add, edit or remove subjects" : "View subjects information",
       icon: FaBook,
       iconColor: "bg-orange-500",
       hoverColor: "hover:bg-orange-50",
       route: "/manage-subjects",
     },
     {
-      title: "Manage Rooms",
-      description: "Configure room availability",
+      title: userRole === "admin" ? "Manage Rooms" : "View Rooms",
+      description: userRole === "admin"
+    ? "Configure room availability" : "View room availability",
       icon: FaDoorOpen,
       iconColor: "bg-purple-500",
       hoverColor: "hover:bg-purple-50",
       route: "/manage-rooms",
     },
     {
-      title: "Manage Faculty",
-      description: "Handle faculty information",
+      title: userRole === "admin" ? "Manage Faculty" : "View Faculty",
+      description: userRole === "admin"
+    ? "Handle faculty information" : "View faculty information",
       icon: FaUserTie,
       iconColor: "bg-indigo-500",
       hoverColor: "hover:bg-indigo-50",
       route: "/manage-faculty",
     },
     {
-      title: "Manage Batches",
-      description: "Organize batch details and schedules",
-      icon: FaLayerGroup, // A good icon to represent batches
+      title: userRole === "admin" ? "Manage Batches" : "View Batches",
+      description: userRole === "admin"
+    ? "Organize batch details and schedules" : "View batch details and schedules",
+      icon: FaLayerGroup,
       iconColor: "bg-green-500",
       hoverColor: "hover:bg-green-50",
       route: "/manage-batches",
@@ -200,17 +263,30 @@ const Dashboard = () => {
     window.location.reload();
   };
 
+  // Loading Spinner
+  if (loading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="animate-spin w-8 h-8 text-blue-500 mx-auto mb-4" />
+          <p className="text-slate-600">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // This Will prevents flash of content befre redirect
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <NavBar onLogout={logout} />
-      {/* <NavBar  /> */}
-
       {/* Header Section */}
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-4">
-        <Heading text="Admin Dashboard" />
-        <p className="text-center text-slate-600 mt-2 text-sm sm:text-base">
-          Manage your academic scheduling system efficiently
-        </p>
+         <Heading text={userRole === "admin" ? "Admin Dashboard" : "Faculty Dashboard"} />
+      <p className="text-center text-slate-600 mt-2 text-sm sm:text-base">
+        {userRole === "admin" ? " Manage your academic scheduling system efficiently" : "View your academic scheduling system efficiently"}
+      </p>
       </div>
 
       {/* Error Alert */}
