@@ -6,7 +6,7 @@ import (
 	"tms-server/models"
 )
 
-// TODO: hash password with bcrypt, not yet implemented
+// TODO: hash password with bcrypt
 func AuthenticateUser(username, password string) (*models.User, error) {
 	var user models.User
 
