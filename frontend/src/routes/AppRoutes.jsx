@@ -19,6 +19,7 @@ import AdminApprovalPage from "../pages/AdminApprovalPage";
 import Attendence from "../pages/MarkAttendance";
 import CreatePasswordPage from "../pages/CreatePasswordPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import ClassTimeTable from "../pages/ClassTimeTable";
 
 
 const AppRoutes = () => {
@@ -161,6 +162,15 @@ const AppRoutes = () => {
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <ResetPasswordPage/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route
+        path="/class-timetable"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ClassTimeTable/>
           //</PrivateRoute>
         }
         />
