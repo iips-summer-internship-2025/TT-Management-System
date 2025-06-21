@@ -7,7 +7,7 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const { logout } = useAuth();
   
-  const noNavBarRoutes = ['/'];
+  const noNavBarRoutes = ['/','/signup','/create-password','/reset-password'];
   
   const shouldShowNavBar = !noNavBarRoutes.includes(location.pathname);
 

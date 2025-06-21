@@ -9,6 +9,8 @@ import {
   FaEdit,
   FaUserTie, FaSpinner, FaExclamationTriangle,
   FaLayerGroup,
+  FaBell,
+  FaUnlock
 } from "react-icons/fa";
 import { SiBasicattentiontoken } from "react-icons/si";
 import { FaTableCells } from "react-icons/fa6";
@@ -256,6 +258,22 @@ const Dashboard = () => {
       iconColor: "bg-green-500",
       hoverColor: "hover:bg-green-50",
       route: "/manage-batches",
+    },
+    {
+      title: "Faculty Request",
+      description: "Manage the faculty request",
+      icon: FaBell,
+      iconColor: "bg-pink-500",
+      hoverColor: "hover:bg-pink-50",
+      route: "/admin-approval",
+    },
+    {
+      title: "Create Password",
+      description: "Manage the faculty request",
+      icon: FaUnlock,
+      iconColor: "bg-yellow-500",
+      hoverColor: "hover:bg-yellow-50",
+      route: "/create-password",
     },
   ];
 
