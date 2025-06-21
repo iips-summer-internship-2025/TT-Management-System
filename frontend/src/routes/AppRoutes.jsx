@@ -14,7 +14,12 @@ import UpdateTimeTable from "../pages/ViewTimeTable";
 import ManageCourses from "../pages/ManageCourses";
 import ManageFaculty from "../pages/ManageFaculty";
 import ManageBatches from "../pages/ManageBatches";
+import SignUpPage from "../pages/SignupPage";
+import AdminApprovalPage from "../pages/AdminApprovalPage";
 import Attendence from "../pages/MarkAttendance";
+import CreatePasswordPage from "../pages/CreatePasswordPage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
+import ClassTimeTable from "../pages/ClassTimeTable";
 
 
 const AppRoutes = () => {
@@ -115,11 +120,57 @@ const AppRoutes = () => {
           //</PrivateRoute>
         }
         />
+
+      <Route 
+        path="/signup"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <SignUpPage/>
+          //</PrivateRoute>
+        }
+        />
+        
+      <Route 
+        path="/admin-approval"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <AdminApprovalPage/>
+          //</PrivateRoute>
+        }
+        />
+
       <Route
         path="/attencendance"
         element={
           //<PrivateRoute requiredRoles={["Admin"]}>
             <Attendence/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route
+        path="/create-password"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <CreatePasswordPage/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route
+        path="/reset-password"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ResetPasswordPage/>
+          //</PrivateRoute>
+        }
+        />
+
+      <Route
+        path="/class-timetable"
+        element={
+          //<PrivateRoute requiredRoles={["Admin"]}>
+            <ClassTimeTable/>
           //</PrivateRoute>
         }
         />
